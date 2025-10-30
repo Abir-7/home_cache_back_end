@@ -14,4 +14,25 @@ router.post(
   ProviderController.createProvider
 );
 
+router.patch(
+  "/:provider_id",
+  auth(["user"]),
+  upload.array("files"),
+  parseDataField("data"),
+  ProviderController.updateProvider
+);
+router.get(
+  "/",
+  auth(["user"]),
+
+  ProviderController.getAllProviders
+);
+
+router.get(
+  "/:provider_id",
+  auth(["user"]),
+
+  ProviderController.getProviderById
+);
+
 export const ProviderRoute = router;
