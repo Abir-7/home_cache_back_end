@@ -17,7 +17,7 @@ const createProvider = async (
 };
 
 const updateProvider = async (
-  data: any,
+  data: Partial<typeof Providers.$inferInsert>,
   provider_id: string,
   tx?: NodePgDatabase<typeof schema>
 ) => {

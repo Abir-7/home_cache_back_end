@@ -3,13 +3,22 @@ import catchAsync from "../utils/serverTools/catchAsync";
 import { AppError } from "../utils/serverTools/AppError";
 import sendResponse from "../utils/serverTools/sendResponse";
 import { ProviderService } from "../services/provider.service";
+import { getRelativePath } from "../utils/helper/getRelativeFilePath";
+import { appConfig } from "../config/appConfig";
 
 export const createProvider = catchAsync(
   async (req: Request, res: Response) => {
-    const { name, email, phone, address } = req.body;
-
+    let documents: { file_id: string; url: string }[] = [];
+    if (req.files && req.files.length !== 0) {
+      documents = (req.files as Express.Multer.File[]).map((file) => {
+        return {
+          file_id: getRelativePath(file.path),
+          url: `${appConfig.server.base_url}${getRelativePath(file.path)}`,
+        };
+      });
+    }
     const result = await ProviderService.createProvider(
-      req.body,
+      { ...req.body, documents },
       req.user.user_id
     );
 
@@ -25,17 +34,13 @@ export const createProvider = catchAsync(
 // ================== GET PROVIDER BY ID ==================
 export const getProviderById = catchAsync(
   async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { provider_id } = req.params;
 
-    if (!id) {
+    if (!provider_id) {
       throw new AppError("Provider ID is required", 400);
     }
 
-    const result = await getProviderByIdService(id);
-
-    if (!result) {
-      throw new AppError("Provider not found", 404);
-    }
+    const result = await ProviderService.getProviderById(provider_id);
 
     sendResponse(res, {
       success: true,
@@ -49,7 +54,7 @@ export const getProviderById = catchAsync(
 // ================== GET ALL PROVIDERS ==================
 export const getAllProviders = catchAsync(
   async (_req: Request, res: Response) => {
-    const result = await getAllProvidersService();
+    const result = await ProviderService.getAllProviders();
 
     sendResponse(res, {
       success: true,
@@ -63,14 +68,27 @@ export const getAllProviders = catchAsync(
 // ================== UPDATE PROVIDER ==================
 export const updateProvider = catchAsync(
   async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { provider_id } = req.params;
     const data = req.body;
 
-    if (!id) {
+    if (!provider_id) {
       throw new AppError("Provider ID is required", 400);
     }
 
-    const result = await updateProviderService({ id, ...data });
+    let documents: { file_id: string; url: string }[] = [];
+    if (req.files && req.files.length !== 0) {
+      documents = (req.files as Express.Multer.File[]).map((file) => {
+        return {
+          file_id: getRelativePath(file.path),
+          url: `${appConfig.server.base_url}${getRelativePath(file.path)}`,
+        };
+      });
+    }
+
+    const result = await ProviderService.updateProvider(
+      { ...data, documents },
+      provider_id
+    );
 
     if (!result) {
       throw new AppError("Provider not found or update failed", 404);
@@ -85,26 +103,9 @@ export const updateProvider = catchAsync(
   }
 );
 
-// ================== DELETE PROVIDER ==================
-export const deleteProvider = catchAsync(
-  async (req: Request, res: Response) => {
-    const { id } = req.params;
-
-    if (!id) {
-      throw new AppError("Provider ID is required", 400);
-    }
-
-    const result = await deleteProviderService(id);
-
-    if (!result) {
-      throw new AppError("Provider not found or delete failed", 404);
-    }
-
-    sendResponse(res, {
-      success: true,
-      message: "Provider deleted successfully",
-      status_code: 200,
-      data: result,
-    });
-  }
-);
+export const ProviderController = {
+  createProvider,
+  getAllProviders,
+  getProviderById,
+  updateProvider,
+};

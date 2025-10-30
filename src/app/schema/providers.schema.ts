@@ -14,7 +14,7 @@ export const Providers = pgTable("provider", {
   company: varchar("company"),
   name: varchar("name"),
   mobile: text("mobile"),
-  url: text("url"),
+  web_url: text("url"),
   documents: jsonb("documents")
     .$type<{ file_id: string; url: string }[]>()
     .default([]),

@@ -6,7 +6,20 @@ const createProvider = async (data: any, user_id: string) => {
 
 // ================== UPDATE ==================
 const updateProvider = async (data: any, provider_id: string) => {
-  return await ProviderRepository.updateProvider(data, provider_id);
+  const existing_provider = await ProviderRepository.getProviderById(
+    provider_id
+  );
+
+  let previous_document = existing_provider.documents ?? [];
+
+  if (data.documents && data.documents.length > 0) {
+    previous_document = [...previous_document, ...data.documents];
+  }
+
+  return await ProviderRepository.updateProvider(
+    { ...data, documents: previous_document },
+    provider_id
+  );
 };
 
 // ================== GET BY ID ==================
