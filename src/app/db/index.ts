@@ -10,6 +10,7 @@ import * as UserHomeData from "../schema/user_home_data";
 import * as Providers from "../schema/providers.schema";
 import * as ProviderRating from "../schema/providers_rating.schema";
 import * as LastServiceByProviders from "../schema/last_service_by_provider.schema";
+import * as Documents from "../schema/documents.schema";
 const pool = new Pool({
   connectionString: appConfig.database.dataBase_uri,
 });
@@ -22,6 +23,7 @@ export const schema = {
   ...ProviderRating,
   ...Providers,
   ...LastServiceByProviders,
+  ...Documents,
 };
 export const db = drizzle(pool, {
   schema: schema,
