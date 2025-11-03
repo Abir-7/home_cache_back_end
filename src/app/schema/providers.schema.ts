@@ -4,9 +4,10 @@ import { jsonb } from "drizzle-orm/pg-core";
 import { text } from "drizzle-orm/pg-core";
 import { uuid } from "drizzle-orm/pg-core";
 import { pgTable } from "drizzle-orm/pg-core";
-import { ProvidersRating } from "./providers_rating.schema";
+
 import { timestamps } from "../db/helper/columns.helpers";
-import { LastServiceByProvider } from "./last_service_by_provider.schema";
+
+import { numeric } from "drizzle-orm/pg-core";
 
 export const Providers = pgTable("provider", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -19,9 +20,5 @@ export const Providers = pgTable("provider", {
     .$type<{ file_id: string; url: string }[]>()
     .default([]),
   ...timestamps,
+  rating: numeric("rating", { precision: 3, scale: 2 }).default("0.0"),
 });
-
-export const ProviderRelation = relations(Providers, ({ many }) => ({
-  ratings: many(ProvidersRating),
-  last_services: many(LastServiceByProvider),
-}));
