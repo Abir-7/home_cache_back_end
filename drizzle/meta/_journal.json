@@ -5,57 +5,22 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1761718068024,
-      "tag": "0000_lean_shadowcat",
+      "when": 1762404734612,
+      "tag": "0000_bored_deathstrike",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1761718098425,
-      "tag": "0001_steep_vulcan",
+      "when": 1762406403607,
+      "tag": "0001_modern_deadpool",
       "breakpoints": true
     },
     {
       "idx": 2,
       "version": "7",
-      "when": 1761718119699,
-      "tag": "0002_white_prima",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1761814723037,
-      "tag": "0003_dapper_captain_america",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1762145681015,
-      "tag": "0004_pretty_marvel_zombies",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1762146161793,
-      "tag": "0005_amazing_mordo",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1762147401404,
-      "tag": "0006_military_brother_voodoo",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1762156080619,
-      "tag": "0007_overrated_thanos",
+      "when": 1762410050494,
+      "tag": "0002_lush_rick_jones",
       "breakpoints": true
     }
   ]

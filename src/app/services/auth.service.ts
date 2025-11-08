@@ -22,6 +22,7 @@ import { appConfig } from "../config/appConfig";
 import { getRemainingMinutes } from "../utils/helper/getRemainingMitutes";
 import comparePassword from "../utils/helper/comparePassword";
 import { ICreateProfile, ICreateUser } from "../dtos/user.dtos";
+import { emailQueue } from "../lib/bullmq/queues/email.queue";
 
 const registerUser = async (
   user_data: ICreateUser,
@@ -83,13 +84,23 @@ const registerUser = async (
         trx
       );
 
-      await publishJob("emailQueue", {
+      // await publishJob("emailQueue", {
+      //   to: user.email,
+      //   subject: "Verification",
+      //   code: otp,
+      //   project_name: "Home Cache",
+      //   expire_time: "10 min",
+      //   purpose: "Verify your email",
+      // });
+
+      await emailQueue.add("sendEmail", {
         to: user.email,
         subject: "Verification",
         code: otp,
         project_name: "Home Cache",
-        expire_time: "10 min",
+        expire_time: 10,
         purpose: "Verify your email",
+        body: "",
       });
 
       // Return the results
@@ -260,14 +271,26 @@ const resendCode = async (user_id: string) => {
     verification_type: "resend",
   });
 
-  await publishJob("emailQueue", {
+  // await publishJob("emailQueue", {
+  //   to: user_data.email,
+  //   subject: "Resend",
+  //   code: code,
+  //   project_name: "Home Cache",
+  //   expire_time: "10 min",
+  //   purpose: "verify",
+  // });
+
+  await emailQueue.add("sendEmail", {
     to: user_data.email,
-    subject: "Resend",
+    subject: "Verification",
     code: code,
     project_name: "Home Cache",
-    expire_time: "10 min",
-    purpose: "verify",
+    expire_time: 10,
+    purpose: "Verify",
+    body: "",
   });
+
+  return { message: "Code resend", user_id: user_data.id };
 };
 
 const forgotPassword = async (user_email: string) => {
@@ -288,14 +311,25 @@ const forgotPassword = async (user_email: string) => {
     verification_type: "forgot-password",
   });
 
-  await publishJob("emailQueue", {
+  // await publishJob("emailQueue", {
+  //   to: user_data.email,
+  //   subject: "Forgot Password",
+  //   code: code,
+  //   project_name: "Home Cache",
+  //   expire_time: "10 min",
+  //   purpose: "verify",
+  // });
+
+  await emailQueue.add("sendEmail", {
     to: user_data.email,
-    subject: "Forgot Password",
+    subject: "Verification",
     code: code,
     project_name: "Home Cache",
-    expire_time: "10 min",
-    purpose: "verify",
+    expire_time: 10,
+    purpose: "Verify forgot password request.",
+    body: "",
   });
+
   return {
     message: "A code has been sent to your email.",
     user_id: user_data.id,

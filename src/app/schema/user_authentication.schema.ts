@@ -1,11 +1,4 @@
-import {
-  pgTable,
-  uuid,
-  text,
-  timestamp,
-  foreignKey,
-  varchar,
-} from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp, varchar } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { Users } from "./user.schema";
 import { timestamps } from "../db/helper/columns.helpers";
@@ -18,7 +11,7 @@ export const auth_type_enum = pgEnum("auth_type", [
   "resend",
   "token",
 ]);
-// user_authentications table
+
 export const UserAuthentications = pgTable("user_authentications", {
   id: uuid("id").primaryKey().defaultRandom(),
   user_id: uuid("user_id")

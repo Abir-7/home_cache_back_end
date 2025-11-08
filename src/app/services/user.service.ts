@@ -13,4 +13,6 @@ const updateHomeDataOfUser = async (user_id: string, data: any) => {
 
   return updated_home_data;
 };
+
+
 export const UserServce = { updateHomeDataOfUser };

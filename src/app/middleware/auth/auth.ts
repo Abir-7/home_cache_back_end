@@ -26,8 +26,6 @@ export const auth =
         throw new AppError("You are unauthorize. user not found", 401);
       }
 
-      console.log(user_data.role);
-      console.log(allowed_roles);
       if (!allowed_roles.includes(user_data.role)) {
         throw new AppError("You are unauthorize. role not matched", 401);
       }
