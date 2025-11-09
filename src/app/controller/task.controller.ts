@@ -61,10 +61,23 @@ const getTaskNotification = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
+const update_task_status = catchAsync(async (req: Request, res: Response) => {
+  const result = await TaskService.update_task_status(req.body);
+
+  sendResponse(res, {
+    success: true,
+    message: "Task status updated successfully",
+    status_code: 200,
+    data: result,
+  });
+});
+
 export const TaskController = {
   addNewTask,
   assignedMember,
   userTask,
   taskDetails,
   getTaskNotification,
+  update_task_status,
 };

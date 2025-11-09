@@ -17,6 +17,12 @@ router.get(
   auth(["user"]),
   TaskController.getTaskNotification
 );
+router.patch(
+  "/mark_as_done_or_ignore",
+  auth(["user"]),
+  TaskController.update_task_status
+);
+
 router.get(
   "/task_details/:task_id",
   auth(["user"]),

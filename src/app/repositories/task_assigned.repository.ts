@@ -20,6 +20,22 @@ const assignMember = async (
   return add_task;
 };
 
+const changeMember = async (
+  task_assing_id: string,
+  data: Partial<typeof TaskAssignments.$inferInsert>,
+  tx?: NodePgDatabase<typeof schema>
+) => {
+  const client = tx ?? db;
+
+  const [updated_data] = await client
+    .update(TaskAssignments)
+    .set(data)
+    .where(eq(TaskAssignments.id, task_assing_id))
+    .returning();
+
+  return updated_data;
+};
+
 const lastCompletedServiceWithProfile = async (task_id: string) => {
   // Step 1: get latest completed assignment
   const [assignment] = await db
@@ -47,7 +63,9 @@ const lastCompletedServiceWithProfile = async (task_id: string) => {
       .from(UserProfiles)
       .where(eq(UserProfiles.user_id, assignment.assign_to))
       .limit(1);
-    name = profile?.name ?? null;
+    name = profile
+      ? `${profile.first_name ?? ""} ${profile.last_name ?? ""}`.trim()
+      : null;
   } else if (assignment.user_type === "provider") {
     [profile] = await db
       .select()
@@ -93,7 +111,7 @@ const latestTaskUserDetails = async (task_id: string) => {
   if (assignment.user_type === "user") {
     [profile] = await db
       .select({
-        name: sql<string>`concat(${UserProfiles.first_name}, ' ', ${UserProfiles.last_name}),`,
+        name: sql<string>`concat(${UserProfiles.first_name}, ' ', ${UserProfiles.last_name})`,
         id: UserProfiles.id,
       })
       .from(UserProfiles)
@@ -126,15 +144,17 @@ const getTaskNotification = async (user_id: string) => {
         description: Tasks.description,
         date: TaskAssignments.date,
         user_type: TaskAssignments.user_type,
+
         created_by: Tasks.created_by,
         last_completed_date: sql<string>`(
-          SELECT date
+          SELECT date 
           FROM task_assignments AS t2
           WHERE t2.task_id = ${TaskAssignments.task_id}
           AND t2.status = 'completed'
           ORDER BY date DESC
           LIMIT 1
         )`,
+        assign_to: TaskAssignments.assign_to,
       })
       .from(TaskAssignments)
       .innerJoin(Tasks, eq(Tasks.id, TaskAssignments.task_id))
@@ -166,7 +186,43 @@ const getTaskNotification = async (user_id: string) => {
     fetchTasks(false),
   ]);
 
-  return { upcoming, overdue };
+  return {
+    upcoming: upcoming.map(({ id, ...rest }) => ({
+      ...rest,
+      task_assign_id: id,
+    })),
+    overdue: overdue.map(({ id, ...rest }) => ({
+      ...rest,
+      task_assign_id: id,
+    })),
+  };
+};
+
+const getLatestTaskAssingInfo = async (task_id: string) => {
+  const [assignment] = await db
+    .select()
+    .from(TaskAssignments)
+    .where(eq(TaskAssignments.task_id, task_id))
+    .orderBy(desc(TaskAssignments.created_at))
+    .limit(1);
+
+  if (!assignment) return null;
+
+  return assignment;
+};
+
+const update_task_status = async (
+  task_assign_id: string,
+  task_status: "ignored" | "completed",
+  tx?: NodePgDatabase<typeof schema>
+) => {
+  const client = tx ?? db;
+  const [updated_data] = await client
+    .update(TaskAssignments)
+    .set({ status: task_status })
+    .where(eq(TaskAssignments.id, task_assign_id))
+    .returning();
+  return updated_data;
 };
 
 export const TaskAssignedRepository = {
@@ -174,4 +230,7 @@ export const TaskAssignedRepository = {
   lastCompletedServiceWithProfile,
   latestTaskUserDetails,
   getTaskNotification,
+  getLatestTaskAssingInfo,
+  changeMember,
+  update_task_status,
 };
