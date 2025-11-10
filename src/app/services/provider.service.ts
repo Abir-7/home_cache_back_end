@@ -1,4 +1,5 @@
 import { ProviderRepository } from "../repositories/provider.repository";
+import { ProviderFilter } from "../types/prodiver_repository.interface";
 
 const createProvider = async (data: any, user_id: string) => {
   return await ProviderRepository.createProvider({ ...data, user_id });
@@ -28,8 +29,8 @@ const getProviderById = async (id: string) => {
 };
 
 // ================== GET ALL ==================
-const getAllProviders = async () => {
-  return await ProviderRepository.getAllProviders();
+const getAllProviders = async (filter: ProviderFilter, user_id: string) => {
+  return await ProviderRepository.getFilteredProviders(filter, user_id);
 };
 
 export const ProviderService = {

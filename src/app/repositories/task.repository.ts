@@ -1,4 +1,4 @@
-import { desc, eq, inArray, or, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, or, sql } from "drizzle-orm";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Tasks } from "../schema/task.schema";
 import { db, schema } from "../db";
@@ -8,11 +8,11 @@ import { TaskFilter } from "../dtos/task.dtos";
 import { AppError } from "../utils/serverTools/AppError";
 
 interface ITask {
+  id: string;
   title: string;
   description: string | null;
-  date: Date | null;
   initial_date: Date;
-  task_id: string;
+  date: Date | null;
 }
 
 const addTask = async (
@@ -43,27 +43,33 @@ const getTaskById = async (id: string, tx?: NodePgDatabase<typeof schema>) => {
   return task;
 };
 
-export const getUserTasks = async (
+const getUserTasks = async (
   user_id: string,
-  filter: TaskFilter = "overdue" // default
+  filter: TaskFilter = "upcoming"
 ) => {
+  // Fetch tasks assigned to the user or created by the user
   const tasks = await db
-    .selectDistinctOn([Tasks.id], {
+    .select({
+      id: Tasks.id,
       title: Tasks.title,
       description: Tasks.description,
-      date: TaskAssignments.date,
       initial_date: Tasks.initial_date,
-      task_id: Tasks.id,
+      date: TaskAssignments.date,
     })
     .from(Tasks)
-    .leftJoin(TaskAssignments, eq(Tasks.id, TaskAssignments.task_id))
+    .leftJoin(TaskAssignments, eq(TaskAssignments.task_id, Tasks.id))
     .where(
-      or(eq(Tasks.created_by, user_id), eq(TaskAssignments.assign_to, user_id))
+      or(
+        eq(Tasks.created_by, user_id),
+        and(
+          eq(TaskAssignments.assign_to, user_id),
+          eq(TaskAssignments.status, "pending")
+        )
+      )
     )
-    .orderBy(Tasks.id);
+    .orderBy(desc(TaskAssignments.date));
 
   const now = new Date();
-
   const upcoming: ITask[] = [];
   const overdue: ITask[] = [];
 
@@ -80,7 +86,8 @@ export const getUserTasks = async (
     }
   }
 
-  return { upcoming, overdue };
+  // Apply filter if needed
+  if (filter === "upcoming") return upcoming;
+  if (filter === "overdue") return overdue;
 };
-
 export const TaskRepository = { addTask, getTaskById, getUserTasks };

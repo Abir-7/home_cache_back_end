@@ -1,7 +1,11 @@
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Providers } from "../schema/providers.schema";
 import { db, schema } from "../db";
-import { eq } from "drizzle-orm";
+import { and, desc, eq, gte, ilike, or, sql } from "drizzle-orm";
+import { TaskAssignments } from "../schema/task_assignment.schema";
+import { Tasks } from "../schema/task.schema";
+import { getDateRange } from "../utils/helper/provider_repo_helper/get_date_range";
+import { ProviderFilter } from "../types/prodiver_repository.interface";
 
 const createProvider = async (
   data: typeof Providers.$inferInsert,
@@ -48,9 +52,67 @@ const getAllProviders = async () => {
   return providers; // returns Provider[]
 };
 
+const getFilteredProviders = async (
+  filter: ProviderFilter = {},
+  user_id: string
+) => {
+  const { min_rating, type, service_range, search } = filter;
+  const dateLimit = getDateRange(service_range);
+
+  // 🔹 Base filters (always apply)
+  const baseFilters = [
+    min_rating ? gte(Providers.rating, String(min_rating)) : undefined,
+    type ? eq(Providers.type, type) : undefined,
+  ].filter(Boolean);
+
+  // 🔹 Optional search (matches name OR type, case-insensitive)
+  if (search && search.trim() !== "") {
+    baseFilters.push(
+      or(
+        ilike(Providers.name, `%${search}%`),
+        ilike(Providers.type, `%${search}%`)
+      )
+    );
+  }
+
+  // 🔹 Conditional filters (only if service_range given)
+  if (dateLimit) {
+    baseFilters.push(
+      and(eq(Tasks.created_by, user_id), gte(TaskAssignments.date, dateLimit))
+    );
+  }
+  console.log(dateLimit, user_id);
+  const providers = await db
+    .select({
+      provider_id: Providers.id,
+      name: Providers.name,
+      company: Providers.company,
+      type: Providers.type,
+      rating: Providers.rating,
+      last_service_date: sql<Date>`
+  MAX(
+    CASE 
+      WHEN ${TaskAssignments.status} = 'completed' 
+      THEN ${TaskAssignments.date} 
+      ELSE NULL 
+    END
+  )
+`,
+    })
+    .from(Providers)
+    .leftJoin(TaskAssignments, eq(TaskAssignments.assign_to, Providers.id))
+    .leftJoin(Tasks, eq(TaskAssignments.task_id, Tasks.id))
+    .where(baseFilters.length ? and(...baseFilters) : undefined)
+    .groupBy(Providers.id)
+    .orderBy(desc(sql`MAX(${TaskAssignments.date})`));
+
+  return providers;
+};
+
 export const ProviderRepository = {
   createProvider,
   updateProvider,
   getAllProviders,
   getProviderById,
+  getFilteredProviders,
 };

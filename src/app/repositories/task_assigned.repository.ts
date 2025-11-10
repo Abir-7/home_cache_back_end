@@ -186,16 +186,29 @@ const getTaskNotification = async (user_id: string) => {
     fetchTasks(false),
   ]);
 
-  return {
-    upcoming: upcoming.map(({ id, ...rest }) => ({
-      ...rest,
-      task_assign_id: id,
-    })),
-    overdue: overdue.map(({ id, ...rest }) => ({
-      ...rest,
-      task_assign_id: id,
-    })),
-  };
+  const maped_upcomming = upcoming.map(({ id, ...rest }) => ({
+    ...rest,
+    task_assign_id: id,
+    is_overdue: false,
+  }));
+  const maped_overdue = overdue.map(({ id, ...rest }) => ({
+    ...rest,
+    task_assign_id: id,
+    is_overdue: true,
+  }));
+  // return {
+  //   upcoming: upcoming.map(({ id, ...rest }) => ({
+  //     ...rest,
+  //     task_assign_id: id,
+  //     is_overdue: false,
+  //   })),
+  //   overdue: overdue.map(({ id, ...rest }) => ({
+  //     ...rest,
+  //     task_assign_id: id,
+  //     is_overdue: true,
+  //   })),
+  // };
+  return [...maped_upcomming, ...maped_overdue];
 };
 
 const getLatestTaskAssingInfo = async (task_id: string) => {

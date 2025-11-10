@@ -53,8 +53,11 @@ export const getProviderById = catchAsync(
 
 // ================== GET ALL PROVIDERS ==================
 export const getAllProviders = catchAsync(
-  async (_req: Request, res: Response) => {
-    const result = await ProviderService.getAllProviders();
+  async (req: Request, res: Response) => {
+    const result = await ProviderService.getAllProviders(
+      req.query,
+      req.user.user_id
+    );
 
     sendResponse(res, {
       success: true,

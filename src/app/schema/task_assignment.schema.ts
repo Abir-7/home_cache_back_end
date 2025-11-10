@@ -1,5 +1,5 @@
 import { pgTable, uuid, timestamp, text, pgEnum } from "drizzle-orm/pg-core";
-import { UserProfiles } from "./user_profiles.schema";
+
 import { Tasks } from "./task.schema";
 import { relations } from "drizzle-orm";
 import { timestamps } from "../db/helper/columns.helpers";
@@ -11,6 +11,7 @@ export const taskStatusEnum = pgEnum("task_status", [
   "completed",
 ]);
 export const userTypeEnum = pgEnum("user_type", ["user", "provider"]);
+
 export const TaskAssignments = pgTable("task_assignments", {
   id: uuid("id").primaryKey().defaultRandom(),
   task_id: uuid("task_id")
