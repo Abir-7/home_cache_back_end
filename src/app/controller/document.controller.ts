@@ -7,15 +7,35 @@ import { getRelativePath } from "../utils/helper/getRelativeFilePath";
 import { appConfig } from "../config/appConfig";
 
 const saveNewDocument = catchAsync(async (req: Request, res: Response) => {
-  const files = req.files as Express.Multer.File[];
+  //Local-------------------
+
+  // const files = req.files as Express.Multer.File[];
+
+  // let filedata: TFile[] = [];
+
+  // if (files.length > 0) {
+  //   filedata = files.map((file) => {
+  //     return {
+  //       file_id: getRelativePath(file.path),
+  //       file_url: `${appConfig.server.base_url}${getRelativePath(file.path)}`,
+  //     };
+  //   });
+  // }
+
+  // const result = await DocumentService.saveNewDocument(req.user.user_id, {
+  //   ...req.body,
+  //   files: filedata,
+  // });
+
+  //S3-------------------
 
   let filedata: TFile[] = [];
-
+  const files = req.files as Express.MulterS3.File[];
   if (files.length > 0) {
     filedata = files.map((file) => {
       return {
-        file_id: getRelativePath(file.path),
-        file_url: `${appConfig.server.base_url}${getRelativePath(file.path)}`,
+        file_id: file.key,
+        file_url: file.location,
       };
     });
   }

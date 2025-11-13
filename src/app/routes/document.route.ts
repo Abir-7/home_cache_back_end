@@ -1,15 +1,16 @@
 import { Router } from "express";
 import { auth } from "../middleware/auth/auth";
 import { parseDataField } from "../middleware/parseData";
-import { upload } from "../middleware/multer/multer";
+
 import { DocumentController } from "../controller/document.controller";
+import { upload } from "../middleware/multer/multer_with_s3";
 
 const router = Router();
 
 router.post(
   "/",
   auth(["user"]),
-  upload.array("files"),
+  upload.array("files", 5),
   parseDataField("data"),
   DocumentController.saveNewDocument
 );
