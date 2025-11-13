@@ -7,6 +7,7 @@ export const ZodTaskSchema = z.object({
   description: z.string(),
   initial_date: z.date(),
   recurrence_type: z.enum(recurrenceArray),
+  assign_to: z.string().optional(),
 });
 
 /* TypeScript type inferred from Zod */

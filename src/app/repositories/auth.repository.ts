@@ -52,7 +52,6 @@ const getAuthenticationByUserIdAndCode = async (
       eq(UserAuthentications.otp, code)
     ),
   });
-
   return auth || null;
 };
 const getAuthenticationByUserIdAndToken = async (
