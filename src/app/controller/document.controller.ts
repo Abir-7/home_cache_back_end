@@ -8,7 +8,6 @@ import { appConfig } from "../config/appConfig";
 
 const saveNewDocument = catchAsync(async (req: Request, res: Response) => {
   //Local-------------------
-
   // const files = req.files as Express.Multer.File[];
 
   // let filedata: TFile[] = [];
@@ -28,7 +27,6 @@ const saveNewDocument = catchAsync(async (req: Request, res: Response) => {
   // });
 
   //S3-------------------
-
   let filedata: TFile[] = [];
   const files = req.files as Express.MulterS3.File[];
   if (files.length > 0) {
