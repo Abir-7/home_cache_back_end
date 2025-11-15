@@ -18,7 +18,7 @@ export const Documents = pgTable("documents", {
   added_by: uuid("added_by")
     .references(() => UserProfiles.user_id)
     .notNull(),
-  files: jsonb("files").notNull(),
+  files: jsonb("files").$type<File[]>().notNull(),
   title: varchar("title").notNull(),
   brand: varchar("brand").notNull(),
   exp_date: timestamp("exp_date"),

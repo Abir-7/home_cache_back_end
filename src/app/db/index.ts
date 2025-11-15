@@ -13,6 +13,7 @@ import * as ProviderRating from "../schema/providers_rating.schema";
 import * as Documents from "../schema/documents.schema";
 import * as Task from "../schema/task.schema";
 import * as TaskAssignments from "../schema/task_assignment.schema";
+import * as ViewByRooms from "../schema/vew_by_room.schema";
 
 import * as Provider_Rating from "../schema/providers_rating.schema";
 const pool = new Pool({
@@ -29,8 +30,8 @@ export const schema = {
   ...Documents,
   ...Task,
   ...TaskAssignments,
-
   ...Provider_Rating,
+  ...ViewByRooms,
 };
 
 export const db = drizzle(pool, {

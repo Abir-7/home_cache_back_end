@@ -19,9 +19,13 @@ const getAllDocument = async (type: string) => {
 const getSingleDocument = async (document_id: string) => {
   return await DocumentRepository.getSingleDocument(document_id);
 };
+const deleteSingleDocument = async (document_id: string) => {
+  return await DocumentRepository.deleteSingleDocument(document_id);
+};
 
 export const DocumentService = {
   saveNewDocument,
   getAllDocument,
   getSingleDocument,
+  deleteSingleDocument,
 };

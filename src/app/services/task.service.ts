@@ -1,3 +1,4 @@
+import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { TaskFilter, TTask } from "../dtos/task.dtos";
 import { TAssignTask } from "../dtos/task_assign.dto";
 import { Repository } from "../repositories/helper.repository";
@@ -6,6 +7,7 @@ import { TaskRepository } from "../repositories/task.repository";
 import { TaskAssignedRepository } from "../repositories/task_assigned.repository";
 import { UserRepository } from "../repositories/user.repository";
 import { AppError } from "../utils/serverTools/AppError";
+import { schema } from "../db";
 
 export interface TaskStatusUpdate {
   task_assign_id: string;
@@ -14,16 +16,32 @@ export interface TaskStatusUpdate {
 }
 
 const addTask = async (user_id: string, task_data: TTask) => {
-  const new_data = await TaskRepository.addTask({
-    created_by: user_id,
-    ...task_data,
-    initial_date: new Date(task_data.initial_date),
-  });
+  const { assign_to, ...rest } = task_data;
+  return await Repository.transaction(async (tx) => {
+    const new_data = await TaskRepository.addTask(
+      {
+        created_by: user_id,
+        ...rest,
+        initial_date: new Date(task_data.initial_date),
+      },
+      tx
+    );
 
-  return new_data;
+    let assigned_data;
+    if (assign_to) {
+      assigned_data = await assignMember(
+        { assign_to, task_id: new_data.id },
+        tx
+      );
+    }
+    return { task: new_data, assigned_data };
+  });
 };
 
-const assignMember = async (data: TAssignTask) => {
+const assignMember = async (
+  data: TAssignTask,
+  tx?: NodePgDatabase<typeof schema>
+) => {
   const [provider, user] = await Promise.all([
     ProviderRepository.getProviderById(data.assign_to),
     UserRepository.findById(data.assign_to),
@@ -33,7 +51,7 @@ const assignMember = async (data: TAssignTask) => {
     throw new AppError("No User found to assign");
   }
 
-  const task_data = await TaskRepository.getTaskById(data.task_id);
+  const task_data = await TaskRepository.getTaskById(data.task_id, tx);
   if (!task_data) {
     throw new AppError("Task not found.");
   }
@@ -59,23 +77,34 @@ const assignMember = async (data: TAssignTask) => {
       if (task_assign_data.status == "completed") {
         throw new AppError("Task already completed.");
       } else {
-        return await TaskAssignedRepository.changeMember(task_assign_data.id, {
-          assign_to: data.assign_to,
-          user_type: type,
-        });
+        return await TaskAssignedRepository.changeMember(
+          task_assign_data.id,
+          {
+            assign_to: data.assign_to,
+            user_type: type,
+          },
+          tx
+        );
       }
     } else {
-      return await TaskAssignedRepository.changeMember(task_assign_data.id, {
-        assign_to: data.assign_to,
-        user_type: type,
-      });
+      return await TaskAssignedRepository.changeMember(
+        task_assign_data.id,
+        {
+          assign_to: data.assign_to,
+          user_type: type,
+        },
+        tx
+      );
     }
   } else {
-    return await TaskAssignedRepository.assignMember({
-      ...data,
-      date: task_data.initial_date,
-      user_type: type,
-    });
+    return await TaskAssignedRepository.assignMember(
+      {
+        ...data,
+        date: task_data.initial_date,
+        user_type: type,
+      },
+      tx
+    );
   }
 };
 

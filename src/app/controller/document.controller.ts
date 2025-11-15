@@ -73,8 +73,21 @@ const getSingleDocument = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const deleteSingleDocument = catchAsync(async (req: Request, res: Response) => {
+  const result = await DocumentService.deleteSingleDocument(
+    req.params.document_id
+  );
+  sendResponse(res, {
+    success: true,
+    message: "Document deleted successfully",
+    status_code: 200,
+    data: result,
+  });
+});
+
 export const DocumentController = {
   saveNewDocument,
   getAllDocument,
   getSingleDocument,
+  deleteSingleDocument,
 };

@@ -25,5 +25,9 @@ router.get(
   auth(["user"]),
   DocumentController.getSingleDocument
 );
-
+router.delete(
+  "/:document_id",
+  auth(["user"]),
+  DocumentController.deleteSingleDocument
+);
 export const DocumentRoute = router;
