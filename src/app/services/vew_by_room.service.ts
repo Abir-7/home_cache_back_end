@@ -52,6 +52,11 @@ const updateViewByRoom = async (
 
 const deleteViewByRoom = async (id: string) => {
   const deleted = await ViewByRoomsRepository.deleteViewByRoom(id);
+
+  if (deleted && deleted.image_id) {
+    await deleteFile(deleted.image_id);
+  }
+
   return deleted;
 };
 

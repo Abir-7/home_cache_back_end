@@ -61,4 +61,8 @@ export const appConfig = {
       forcePathStyle: process.env.AWS_S3_FORCE_PATH_STYLE === "true",
     },
   },
+  ai: {
+    open_ai_key: process.env.OPEN_AI_KEY,
+    gemini_ai_key: process.env.GEMINI_AI_KEY,
+  },
 };
