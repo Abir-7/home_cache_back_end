@@ -2,6 +2,7 @@ import { pgTable, varchar, uuid, date } from "drizzle-orm/pg-core";
 
 import { Users } from "./user.schema";
 import { timestamps } from "../db/helper/columns.helpers";
+import { relations } from "drizzle-orm";
 
 export const viewByRooms = pgTable("view_by_rooms", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -19,3 +20,10 @@ export const viewByRooms = pgTable("view_by_rooms", {
   last_painted: date("last_painted"),
   ...timestamps,
 });
+
+export const viewByRoomsRelations = relations(viewByRooms, ({ one }) => ({
+  addedBy: one(Users, {
+    fields: [viewByRooms.added_by],
+    references: [Users.id],
+  }),
+}));
