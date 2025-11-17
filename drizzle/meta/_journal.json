@@ -43,6 +43,13 @@
       "when": 1763286169138,
       "tag": "0005_right_korvac",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1763379296285,
+      "tag": "0006_flashy_lorna_dane",
+      "breakpoints": true
     }
   ]
 }
