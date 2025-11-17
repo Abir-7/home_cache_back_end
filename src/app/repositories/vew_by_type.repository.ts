@@ -70,7 +70,7 @@ const deleteViewByType = async (
   return deleted;
 };
 
-export const ViewByRoomsRepository = {
+export const ViewByTypesRepository = {
   addViewByType,
   getViewByTypeById,
   getViewByTypeByUser,

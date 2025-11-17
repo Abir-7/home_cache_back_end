@@ -15,6 +15,8 @@ import * as Task from "../schema/task.schema";
 import * as TaskAssignments from "../schema/task_assignment.schema";
 import * as ViewByRooms from "../schema/vew_by_room.schema";
 import * as ViewByType from "../schema/view_by_types.schema";
+import * as RoomInvite from "../schema/home_room_invite.schema";
+import * as RoomMembers from "../schema/home_room_member.schema";
 
 import * as Provider_Rating from "../schema/providers_rating.schema";
 const pool = new Pool({
@@ -34,6 +36,8 @@ export const schema = {
   ...Provider_Rating,
   ...ViewByRooms,
   ...ViewByType,
+  ...RoomInvite,
+  ...RoomMembers,
 };
 
 export const db = drizzle(pool, {

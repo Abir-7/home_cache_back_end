@@ -60,7 +60,7 @@ const getViewByTypeById = catchAsync(async (req: Request, res: Response) => {
 // --------------------
 const updateViewByType = catchAsync(async (req: Request, res: Response) => {
   const { type_id } = req.params;
-
+  console.log(type_id);
   const file = req.file as Express.MulterS3.File;
   const image = file.location;
   const image_id = file.key;
