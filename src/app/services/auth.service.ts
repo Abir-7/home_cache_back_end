@@ -11,7 +11,7 @@ import {
 } from "../middleware/auth/auth.interface";
 import getOtp from "../utils/helper/getOtp";
 import getExpiryTime from "../utils/helper/getExpiryTime";
-import { publishJob } from "../lib/rabbitMq/publisher";
+
 import isExpired from "../utils/helper/isExpired";
 import { UserRepository } from "../repositories/user.repository";
 import { logger } from "../utils/serverTools/logger";

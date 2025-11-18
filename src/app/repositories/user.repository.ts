@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, ilike } from "drizzle-orm";
 import { db, schema } from "../db";
 import { Users } from "../schema/user.schema";
 
@@ -73,6 +73,25 @@ const deleteUser = async (id: string) => {
   return true;
 };
 
+export const searchUser = async (email: string) => {
+  return await db.query.Users.findMany({
+    where: (user, { ilike }) => ilike(user.email, `%${email}%`),
+    columns: {
+      id: true,
+      email: true,
+    },
+    with: {
+      profile: {
+        columns: {
+          first_name: true,
+          last_name: true,
+          image: true,
+        },
+      },
+    },
+  });
+};
+
 export const UserRepository = {
   findByEmail,
   findById,
@@ -81,6 +100,6 @@ export const UserRepository = {
   createUsersHomeData,
   updateUserHomeData,
   getUsersHomeData,
-
+  searchUser,
   deleteUser,
 };

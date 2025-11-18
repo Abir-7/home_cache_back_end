@@ -2,7 +2,7 @@ import http from "http";
 import app from "./app";
 import { appConfig } from "./app/config/appConfig";
 import { logger } from "./app/utils/serverTools/logger";
-import { startConsumers } from "./app/lib/rabbitMq/worker";
+
 import { db } from "./app/db";
 import redis from "./app/lib/radis";
 import { initSocket } from "./app/lib/socket";
