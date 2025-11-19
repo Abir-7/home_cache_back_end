@@ -16,7 +16,6 @@ server.listen(appConfig.server.port, async () => {
     await seedAdmin();
 
     initSocket(server);
-
     logger.info(
       `Server running in ${appConfig.server.node_env} mode on port ${appConfig.server.port}`
     );
