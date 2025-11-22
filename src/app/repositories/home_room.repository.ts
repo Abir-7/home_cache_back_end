@@ -58,6 +58,15 @@ const getMemberById = async (user_id: string) => {
   return member;
 };
 
+
+const getAllMemberOfHome=async(home_room_id:string)=>{
+    const member = await db.query.RoomMembers.findMany({
+    where: eq(RoomMembers.home_room_id, home_room_id),columns:{id:true,home_room_id:true,user_id:true}
+  });
+  return member.map(m=>m.user_id)
+}
+
+
 const removeMember = async (
   user_id: string,
   tx?: NodePgDatabase<typeof schema>
@@ -100,6 +109,22 @@ const rejectOtherInvites = async (
   return updated;
 };
 
+
+const getInviteList = async (user_id: string) => {
+  const data = await db.query.RoomInvites.findMany({
+    where: and(eq(RoomInvites.receiver, user_id),
+  eq(RoomInvites.status,"pending")),
+    with: {
+      sender: {columns:{user_id:true,first_name:true,last_name:true,image:true}}
+    },
+  });
+
+  return data.map(d=>({invite_id:d.id,sender:d.sender}));
+};
+
+
+
+
 export const HomeRoomRepository = {
   removeMember,
   addMember,
@@ -107,5 +132,6 @@ export const HomeRoomRepository = {
   changeInviteStatus,
   getMemberById,
   removeInvite,
-  rejectOtherInvites,
+  rejectOtherInvites, 
+  getInviteList,getAllMemberOfHome
 };

@@ -18,4 +18,4 @@ const updateHomeDataOfUser = async (
   return updated_home_data;
 };
 
-export const UserServce = { updateHomeDataOfUser };
+export const UserServce = { updateHomeDataOfUser};

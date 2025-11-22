@@ -35,7 +35,7 @@ const getProviderById = async (provider_id: string,user_id:string) => {
 };
 // ================== GET ALL ==================
 const getAllProviders = async (filter: ProviderFilter, user_id: string) => {
-  return await ProviderRepository.getFilteredProviders(filter, user_id);
+  return await ProviderRepository.getFilteredProvidersWithUserFollow(filter, user_id);
 };
 
 export const ProviderService = {

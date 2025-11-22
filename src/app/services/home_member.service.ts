@@ -4,8 +4,10 @@ import { randomUUID } from "crypto";
 import { AppError } from "../utils/serverTools/AppError";
 import { Repository } from "../repositories/helper.repository";
 import { rejectInviteQueue } from "../lib/bullmq/queues/rejectOtherInvites.queues";
+import { cleanRegex } from "zod/v4/core/util.cjs";
 
-const serachMember = async (search_text: string) => {
+const serachMember = async (search_text: string) => { 
+  console.log(search_text)
   const searched_user = await UserRepository.searchUser(search_text);
   return searched_user;
 };
@@ -17,12 +19,14 @@ const inviteUser = async (sender: string, receiver: string) => {
     HomeRoomRepository.getMemberById(receiver),
   ]);
 
-  if (
-    (sender_data && sender_data.home_room_id) ===
-    (receiver_data && receiver_data.home_room_id)
-  ) {
-    throw new AppError("User is already a member");
-  }
+if (
+  sender_data?.home_room_id &&
+  receiver_data?.home_room_id &&
+  sender_data.home_room_id === receiver_data.home_room_id
+) {
+  console.log(receiver_data?.home_room_id, sender_data?.home_room_id);
+  throw new AppError("User is already a member");
+}
 
   if (sender_data) {
     home_id = sender_data.home_room_id;
@@ -41,6 +45,11 @@ const inviteUser = async (sender: string, receiver: string) => {
   }
 };
 
+const getInviteList=async (receiver:string)=>{
+  const data=await HomeRoomRepository.getInviteList(receiver)
+  return data
+}
+
 const acceptInviteStatus = async (invite_id: string, user_id: string) => {
   const user_home_data = await HomeRoomRepository.getMemberById(user_id);
   if (!user_home_data) {
@@ -51,6 +60,7 @@ const acceptInviteStatus = async (invite_id: string, user_id: string) => {
         "accepted",
         tx
       );
+
       await HomeRoomRepository.addMember(
         [
           { home_room_id: data.home_room_id, user_id: data.sender },
@@ -64,7 +74,7 @@ const acceptInviteStatus = async (invite_id: string, user_id: string) => {
         receiver_id: user_id,
       });
 
-      return data;
+      return {status:data.status};
     });
   } else {
     throw new AppError("You are already joined as a home member");
@@ -77,9 +87,9 @@ const rejectInviteStatus = async (invite_id: string, user_id: string) => {
     const data = await HomeRoomRepository.changeInviteStatus(
       invite_id,
       user_id,
-      "accepted"
+      "rejected"
     );
-    return data;
+    return {status:data.status};
   } else {
     throw new AppError("You are already joined as a home member");
   }
@@ -100,5 +110,5 @@ export const HomeMemberService = {
   inviteUser,
   acceptInviteStatus,
   rejectInviteStatus,
-  leaveAsHomeMember,
+  leaveAsHomeMember, getInviteList
 };

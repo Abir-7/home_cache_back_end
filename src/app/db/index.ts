@@ -17,7 +17,8 @@ import * as ViewByRooms from "../schema/vew_by_room.schema";
 import * as ViewByType from "../schema/view_by_types.schema";
 import * as RoomInvite from "../schema/home_room_invite.schema";
 import * as RoomMembers from "../schema/home_room_member.schema";
-
+import * as  FollowProviders from "../schema/provider_follow.schema";  
+  
 import * as Provider_Rating from "../schema/providers_rating.schema";
 const pool = new Pool({
   connectionString: appConfig.database.dataBase_uri,
@@ -38,6 +39,7 @@ export const schema = {
   ...ViewByType,
   ...RoomInvite,
   ...RoomMembers,
+  ...FollowProviders
 };
 
 export const db = drizzle(pool, {

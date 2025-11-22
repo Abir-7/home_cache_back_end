@@ -8,6 +8,7 @@ import { TaskAssignedRepository } from "../repositories/task_assigned.repository
 import { UserRepository } from "../repositories/user.repository";
 import { AppError } from "../utils/serverTools/AppError";
 import { schema } from "../db";
+import { HomeRoomRepository } from "../repositories/home_room.repository";
 
 export interface TaskStatusUpdate {
   task_assign_id: string;
@@ -109,7 +110,16 @@ const assignMember = async (
 };
 
 const usersTask = async (user_id: string, task_time: TaskFilter) => {
-  return await TaskRepository.getUserTasks(user_id, task_time);
+  const user_home=await HomeRoomRepository.getMemberById(user_id)
+  if(!user_home){
+    return []
+  }
+
+  const user_all_id=await HomeRoomRepository.getAllMemberOfHome(user_home.home_room_id)
+
+  const all_task=await TaskRepository.getHomeTasks(user_all_id,task_time)
+   return all_task
+  //return await TaskRepository.getUserTasks(user_id, task_time);
 };
 
 const taskDetails = async (task_id: string) => {
