@@ -1,7 +1,7 @@
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Providers } from "../schema/providers.schema";
 import { db, schema } from "../db";
-import { and, desc, eq, gte, ilike, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, gte, ilike, lt, or, sql } from "drizzle-orm";
 import { TaskAssignments } from "../schema/task_assignment.schema";
 import { Tasks } from "../schema/task.schema";
 import { getDateRange } from "../utils/helper/provider_repo_helper/get_date_range";
@@ -44,6 +44,49 @@ const getProviderById = async (id: string) => {
     .limit(1);
 
   return provider; // returns single Provider | undefined
+};
+
+const getProviderAppointments = async (providerId: string,user_id:string) => {
+  const now = new Date();
+
+  // ----- LAST APPOINTMENT -----
+  const [lastAppointment] = await db
+    .select({
+      date: TaskAssignments.date,
+      title: Tasks.title,
+    })
+    .from(TaskAssignments)
+    .leftJoin(Tasks, eq(TaskAssignments.task_id, Tasks.id))
+    .where(
+      and(
+        eq(TaskAssignments.assign_to, providerId),
+        lt(TaskAssignments.date, now),eq(Tasks.created_by,user_id)
+      )
+    )
+    .orderBy(desc(TaskAssignments.date))
+    .limit(1);
+
+  // ----- NEXT APPOINTMENT -----
+  const [nextAppointment] = await db
+    .select({
+      date: TaskAssignments.date,
+      title: Tasks.title,
+    })
+    .from(TaskAssignments)
+    .leftJoin(Tasks, eq(TaskAssignments.task_id, Tasks.id))
+    .where(
+      and(
+        eq(TaskAssignments.assign_to, providerId),
+        gt(TaskAssignments.date, now),eq(Tasks.created_by,user_id)
+      )
+    )
+    .orderBy(asc(TaskAssignments.date))
+    .limit(1);
+
+  return {
+    lastAppointment :lastAppointment||null,
+    nextAppointment:nextAppointment || null,
+  };
 };
 
 const getAllProviders = async () => {
@@ -114,5 +157,5 @@ export const ProviderRepository = {
   updateProvider,
   getAllProviders,
   getProviderById,
-  getFilteredProviders,
+  getFilteredProviders, getProviderAppointments
 };

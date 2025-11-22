@@ -2,9 +2,10 @@ import { Worker, Job } from "bullmq";
 import { connection } from "..";
 import { EmailJobData } from "../queues/email.queue";
 import { handleEmailJob } from "../jobs/email.handler";
+import { queue_name } from "../queues/queue.const";
 
 export const emailWorker = new Worker<EmailJobData>(
-  "emailQueue",
+  queue_name.email,
   async (job: Job<EmailJobData>) => {
     console.log(`👷 Processing job ${job.id}`);
     await handleEmailJob(job.data);

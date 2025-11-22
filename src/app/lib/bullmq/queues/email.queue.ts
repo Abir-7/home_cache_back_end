@@ -1,5 +1,6 @@
 import { Queue } from "bullmq";
 import { connection } from "..";
+import { queue_name } from "./queue.const";
 
 export interface EmailJobData {
   to: string;
@@ -11,6 +12,6 @@ export interface EmailJobData {
   body: string; // optional if you want
 }
 
-export const emailQueue = new Queue<EmailJobData>("emailQueue", {
+export const emailQueue = new Queue<EmailJobData>(queue_name.email, {
   connection: connection,
 });

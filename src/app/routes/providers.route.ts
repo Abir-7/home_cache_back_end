@@ -21,17 +21,16 @@ router.patch(
   parseDataField("data"),
   ProviderController.updateProvider
 );
+
 router.get(
   "/",
   auth(["user"]),
-
   ProviderController.getAllProviders
 );
 
 router.get(
   "/:provider_id",
   auth(["user"]),
-
   ProviderController.getProviderById
 );
 

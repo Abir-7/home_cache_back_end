@@ -24,10 +24,15 @@ const updateProvider = async (data: any, provider_id: string) => {
 };
 
 // ================== GET BY ID ==================
-const getProviderById = async (id: string) => {
-  return await ProviderRepository.getProviderById(id);
-};
+const getProviderById = async (provider_id: string,user_id:string) => {
+  const provider = await ProviderRepository.getProviderById(provider_id);
+  const appointments = await ProviderRepository.getProviderAppointments(provider_id,user_id);
 
+  return {
+    provider,
+    ...appointments, // { lastAppointment, nextAppointment }
+  };
+};
 // ================== GET ALL ==================
 const getAllProviders = async (filter: ProviderFilter, user_id: string) => {
   return await ProviderRepository.getFilteredProviders(filter, user_id);

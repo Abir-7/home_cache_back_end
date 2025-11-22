@@ -27,9 +27,8 @@ app.use(cors(cors_option));
 app.use(limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/api", router);
-// Routes
-//app.use(routes);
+app.use("/api/v1", router);
+
 
 app.get("/status", (req, res) => {
   res.send("Server is ok.");

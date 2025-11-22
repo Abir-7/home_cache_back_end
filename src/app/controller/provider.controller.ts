@@ -32,7 +32,7 @@ export const createProvider = catchAsync(
 );
 
 // ================== GET PROVIDER BY ID ==================
-export const getProviderById = catchAsync(
+const getProviderById = catchAsync(
   async (req: Request, res: Response) => {
     const { provider_id } = req.params;
 
@@ -40,7 +40,7 @@ export const getProviderById = catchAsync(
       throw new AppError("Provider ID is required", 400);
     }
 
-    const result = await ProviderService.getProviderById(provider_id);
+    const result = await ProviderService.getProviderById(provider_id,req.user.user_id);
 
     sendResponse(res, {
       success: true,
@@ -52,7 +52,7 @@ export const getProviderById = catchAsync(
 );
 
 // ================== GET ALL PROVIDERS ==================
-export const getAllProviders = catchAsync(
+const getAllProviders = catchAsync(
   async (req: Request, res: Response) => {
     const result = await ProviderService.getAllProviders(
       req.query,

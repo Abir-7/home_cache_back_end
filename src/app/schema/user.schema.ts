@@ -22,8 +22,8 @@ export const Users = pgTable("users", {
   email: varchar("email", { length: 320 }).notNull().unique(),
   role: user_role("role").notNull().default("user"),
   password_hash: text("password_hash").notNull(),
-  is_verified: boolean("is_verified").notNull().default(false),
-  status: user_status_enum("status").notNull().default("pending_verification"),
+  is_verified: boolean("is_verified").notNull().default(true),
+  status: user_status_enum("status").notNull().default("active"),
   need_to_reset_password: boolean("need_to_reset_password")
     .notNull()
     .default(false),

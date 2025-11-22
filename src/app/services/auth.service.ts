@@ -57,8 +57,8 @@ const registerUser = async (
           email,
           password_hash,
 
-          is_verified: false,
-          status: "pending_verification",
+          is_verified: true,
+          status: "active",
         },
         trx
       );
@@ -201,6 +201,7 @@ const userLogin = async (data: {
   if (!user_data) {
     throw new AppError("Account not found. Please check your email", 404);
   }
+  console.log(user_data)
   if (!user_data.is_verified) {
     throw new AppError("Account is not verified.", 400);
   }

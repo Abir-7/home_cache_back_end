@@ -120,9 +120,9 @@ const taskDetails = async (task_id: string) => {
   ]);
 
   return {
-    task_data,
-    last_service_by,
-    present_assign_to,
+    task_data:task_data,
+    last_service_by:last_service_by,
+    present_assign_to:present_assign_to,
   };
 };
 

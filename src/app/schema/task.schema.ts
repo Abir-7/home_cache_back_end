@@ -16,6 +16,7 @@ export const recurrenceArray = [
   "quarterly",
   "annually",
 ] as const;
+
 export const recurrenceEnum = pgEnum("recurrence_type", recurrenceArray);
 
 export const Tasks = pgTable("tasks", {

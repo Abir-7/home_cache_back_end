@@ -38,9 +38,9 @@ const getTaskById = async (id: string, tx?: NodePgDatabase<typeof schema>) => {
     },
   });
 
-  if (!task) throw new AppError("Task not found", 404);
+  //if (!task) throw new AppError("Task not found", 404);
 
-  return task;
+  return task || null;
 };
 
 const getUserTasks = async (
