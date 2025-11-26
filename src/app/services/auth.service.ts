@@ -108,9 +108,35 @@ const registerUser = async (
     });
 
     // Return or use the results outside the transaction
-    return { id: user.id, email: user.email };
+
+    const jwt_payload = {
+      user_email: user_data.email,
+      user_id: user.id,
+      user_role: user.role,
+    } as IAuthData;
+
+    const access_token = jsonWebToken.generateToken(
+      jwt_payload,
+      appConfig.jwt.jwt_access_secret as string,
+      appConfig.jwt.jwt_access_exprire
+    );
+    const refress_token = jsonWebToken.generateToken(
+      jwt_payload,
+      appConfig.jwt.jwt_refresh_secret as string,
+      appConfig.jwt.jwt_refresh_exprire
+    );
+    const decoded_access_token = jsonWebToken.decodeToken(access_token);
+    const decoded_refresh_token = jsonWebToken.decodeToken(refress_token);
+
+    return {
+      id: user.id,
+      email: user.email,
+      access_token,
+      refress_token,
+      access_token_expire: decoded_access_token.exp,
+      refresh_token_expire: decoded_refresh_token.exp,
+    };
   } catch (error) {
-    // console.error("User registration failed:", error);
     throw error;
   }
 };
@@ -201,7 +227,7 @@ const userLogin = async (data: {
   if (!user_data) {
     throw new AppError("Account not found. Please check your email", 404);
   }
-  console.log(user_data)
+  console.log(user_data);
   if (!user_data.is_verified) {
     throw new AppError("Account is not verified.", 400);
   }

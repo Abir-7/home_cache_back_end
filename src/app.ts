@@ -17,7 +17,11 @@ const limiter = rateLimit({
 });
 
 const cors_option = {
-  origin: ["http://localhost:3000"],
+  origin: [
+    "http://localhost:3000",
+    "https://k10swf0g-3000.inc1.devtunnels.ms",
+    "https://c4c06ffcb03f.ngrok-free.app",
+  ],
   methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
   credentials: true,
 };
@@ -28,7 +32,6 @@ app.use(limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/v1", router);
-
 
 app.get("/status", (req, res) => {
   res.send("Server is ok.");

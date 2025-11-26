@@ -5,78 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1762404734612,
-      "tag": "0000_bored_deathstrike",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1762406403607,
-      "tag": "0001_modern_deadpool",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1762410050494,
-      "tag": "0002_lush_rick_jones",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1762669914043,
-      "tag": "0003_secret_quasimodo",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1763201187276,
-      "tag": "0004_empty_terrax",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1763286169138,
-      "tag": "0005_right_korvac",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1763379296285,
-      "tag": "0006_flashy_lorna_dane",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1763635751948,
-      "tag": "0007_productive_bloodstorm",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1763635831489,
-      "tag": "0008_flat_wolf_cub",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "7",
-      "when": 1763792815638,
-      "tag": "0009_concerned_gressill",
-      "breakpoints": true
-    },
-    {
-      "idx": 10,
-      "version": "7",
-      "when": 1763803841233,
-      "tag": "0010_stale_next_avengers",
+      "when": 1764152765635,
+      "tag": "0000_flawless_james_howlett",
       "breakpoints": true
     }
   ]

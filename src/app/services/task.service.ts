@@ -110,15 +110,22 @@ const assignMember = async (
 };
 
 const usersTask = async (user_id: string, task_time: TaskFilter) => {
-  const user_home=await HomeRoomRepository.getMemberById(user_id)
-  if(!user_home){
-    return []
+  const user_home = await HomeRoomRepository.getMemberById(user_id);
+
+  let user_all_id: string[] = [];
+
+  if (user_home) {
+    user_all_id = await HomeRoomRepository.getAllMemberOfHome(
+      user_home.home_room_id
+    );
   }
 
-  const user_all_id=await HomeRoomRepository.getAllMemberOfHome(user_home.home_room_id)
+  if (user_all_id.length === 0) {
+    user_all_id = [user_id];
+  }
 
-  const all_task=await TaskRepository.getHomeTasks(user_all_id,task_time)
-   return all_task
+  const all_task = await TaskRepository.getHomeTasks(user_all_id, task_time);
+  return all_task;
   //return await TaskRepository.getUserTasks(user_id, task_time);
 };
 
@@ -130,9 +137,9 @@ const taskDetails = async (task_id: string) => {
   ]);
 
   return {
-    task_data:task_data,
-    last_service_by:last_service_by,
-    present_assign_to:present_assign_to,
+    task_data: task_data,
+    last_service_by: last_service_by,
+    present_assign_to: present_assign_to,
   };
 };
 

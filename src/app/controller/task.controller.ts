@@ -27,11 +27,12 @@ const assignedMember = catchAsync(async (req: Request, res: Response) => {
 });
 
 const userTask = catchAsync(async (req: Request, res: Response) => {
+  console.log("hit");
   const result = await TaskService.usersTask(
     req.user.user_id,
     req.query.task_time as TaskFilter
   );
-
+  console.log(req.user.user_id);
   sendResponse(res, {
     success: true,
     message: "Task list fetched successfully",

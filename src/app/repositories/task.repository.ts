@@ -91,11 +91,11 @@ const getUserTasks = async (
   if (filter === "overdue") return overdue;
 };
 
-
 const getHomeTasks = async (
-  user_ids: string[],      // <-- array of user IDs
+  user_ids: string[], // <-- array of user IDs
   filter: TaskFilter = "upcoming"
 ) => {
+  console.log(user_ids, "ssss");
   const tasks = await db
     .select({
       id: Tasks.id,
@@ -138,4 +138,9 @@ const getHomeTasks = async (
   if (filter === "overdue") return overdue;
   return { upcoming, overdue }; // optional fallback
 };
-export const TaskRepository = { addTask, getTaskById, getUserTasks,getHomeTasks };
+export const TaskRepository = {
+  addTask,
+  getTaskById,
+  getUserTasks,
+  getHomeTasks,
+};

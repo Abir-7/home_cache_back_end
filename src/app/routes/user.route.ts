@@ -4,7 +4,7 @@ import { UserController } from "../controller/user.controller";
 
 const router = Router();
 router.patch(
-  "/update-home-data",
+  "/update_home_data",
   auth(["user"]),
   UserController.updateHomeDataOfUser
 );

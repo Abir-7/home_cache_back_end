@@ -13,12 +13,14 @@ import * as ProviderRating from "../schema/providers_rating.schema";
 import * as Documents from "../schema/documents.schema";
 import * as Task from "../schema/task.schema";
 import * as TaskAssignments from "../schema/task_assignment.schema";
-import * as ViewByRooms from "../schema/vew_by_room.schema";
 import * as ViewByType from "../schema/view_by_types.schema";
+import * as RoomItem from "../schema/room_item.schema";
+import * as RoomItemDetails from "../schema/room_item_details.schema";
+import * as ViewByRoom from "../schema/view_by_room.schema";
 import * as RoomInvite from "../schema/home_room_invite.schema";
 import * as RoomMembers from "../schema/home_room_member.schema";
-import * as  FollowProviders from "../schema/provider_follow.schema";  
-  
+import * as FollowProviders from "../schema/provider_follow.schema";
+
 import * as Provider_Rating from "../schema/providers_rating.schema";
 const pool = new Pool({
   connectionString: appConfig.database.dataBase_uri,
@@ -35,11 +37,13 @@ export const schema = {
   ...Task,
   ...TaskAssignments,
   ...Provider_Rating,
-  ...ViewByRooms,
+  ...RoomItem,
   ...ViewByType,
   ...RoomInvite,
   ...RoomMembers,
-  ...FollowProviders
+  ...FollowProviders,
+  ...ViewByRoom,
+  ...RoomItemDetails,
 };
 
 export const db = drizzle(pool, {

@@ -1,51 +1,111 @@
-import { eq, ilike } from "drizzle-orm";
+// -------------------------
+// MAIN DOCUMENT
+// -------------------------
+
+import { eq } from "drizzle-orm";
 import { db } from "../db";
+import {
+  Documents,
+  InsuranceDocuments,
+  ManualDocuments,
+  OtherDocuments,
+  QuoteDocuments,
+  ReceiptDocuments,
+  WarrantyDocuments,
+} from "../schema/documents.schema";
 
-import { Documents } from "../schema/documents.schema";
-import { AppError } from "../utils/serverTools/AppError";
-import { deleteMultipleFiles } from "../utils/helper/s3/deleteMultipleFile";
-
-const addNewDocument = async (data: typeof Documents.$inferInsert) => {
-  const [saved_document] = await db.insert(Documents).values(data).returning();
-
-  return saved_document;
+const createDocument = async (
+  data: typeof Documents.$inferInsert
+): Promise<(typeof Documents.$inferSelect)[]> => {
+  return await db.insert(Documents).values(data).returning();
 };
-const getAllDocument = async (type: string) => {
-  const saved_document = await db.query.Documents.findMany({
-    where: ilike(Documents.type, type),
+
+const getDocumentById = async (id: string) => {
+  const saved_data = await db.query.Documents.findFirst({
+    where: eq(Documents.id, id),
   });
-
-  return saved_document;
+  return saved_data;
 };
-const getSingleDocument = async (document_id: string) => {
-  const saved_document = await db.query.Documents.findFirst({
-    where: eq(Documents.id, document_id),
-  });
 
-  return saved_document;
+const deleteDocument = async (
+  id: string
+): Promise<(typeof Documents.$inferSelect)[]> => {
+  return await db.delete(Documents).where(eq(Documents.id, id)).returning();
 };
-const deleteSingleDocument = async (document_id: string) => {
-  const [deleted_document] = await db
-    .delete(Documents)
-    .where(eq(Documents.id, document_id))
-    .returning();
 
-  if (!deleted_document) {
-    throw new AppError("Document not found");
-  }
+// -------------------------
+// WARRANTY
+// -------------------------
 
-  const document_key = deleted_document.files.map((file) => file.file_id);
-
-  if (document_key.length > 0) {
-    await deleteMultipleFiles(document_key);
-  }
-
-  return deleted_document.id;
+const createWarranty = async (
+  data: typeof WarrantyDocuments.$inferInsert
+): Promise<(typeof WarrantyDocuments.$inferSelect)[]> => {
+  return await db.insert(WarrantyDocuments).values(data).returning();
 };
+
+// -------------------------
+// INSURANCE
+// -------------------------
+
+const createInsurance = async (
+  data: typeof InsuranceDocuments.$inferInsert
+): Promise<(typeof InsuranceDocuments.$inferSelect)[]> => {
+  return await db.insert(InsuranceDocuments).values(data).returning();
+};
+
+// -------------------------
+// RECEIPT
+// -------------------------
+
+const createReceipt = async (
+  data: typeof ReceiptDocuments.$inferInsert
+): Promise<(typeof ReceiptDocuments.$inferSelect)[]> => {
+  return await db.insert(ReceiptDocuments).values(data).returning();
+};
+
+// -------------------------
+// QUOTE
+// -------------------------
+
+const createQuote = async (
+  data: typeof QuoteDocuments.$inferInsert
+): Promise<(typeof QuoteDocuments.$inferSelect)[]> => {
+  return await db.insert(QuoteDocuments).values(data).returning();
+};
+
+// -------------------------
+// MANUAL
+// -------------------------
+
+const createManual = async (
+  data: typeof ManualDocuments.$inferInsert
+): Promise<(typeof ManualDocuments.$inferSelect)[]> => {
+  return await db.insert(ManualDocuments).values(data).returning();
+};
+
+// -------------------------
+// OTHER
+// -------------------------
+
+const createOther = async (
+  data: typeof OtherDocuments.$inferInsert
+): Promise<(typeof OtherDocuments.$inferSelect)[]> => {
+  return await db.insert(OtherDocuments).values(data).returning();
+};
+
+// -------------------------
+// EXPORT REPOSITORY
+// -------------------------
 
 export const DocumentRepository = {
-  addNewDocument,
-  getAllDocument,
-  getSingleDocument,
-  deleteSingleDocument,
+  createDocument,
+  getDocumentById,
+  deleteDocument,
+
+  createWarranty,
+  createInsurance,
+  createReceipt,
+  createQuote,
+  createManual,
+  createOther,
 };

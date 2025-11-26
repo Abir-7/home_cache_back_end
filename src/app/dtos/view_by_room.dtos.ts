@@ -1,29 +1,12 @@
 import { z } from "zod";
 
-// --------------------
-// Add ViewByRoom Schema
-// --------------------
-export const addViewByRoomSchema = z.object({
-  type: z.string().optional(),
-  location: z.string().optional(),
-  brand: z.string().optional(),
-  brand_line_color: z.string().optional(),
-  finish: z.string().optional(),
-  room: z.string().optional(),
-  last_painted: z.string().optional(),
-});
-export type TAddViewByRoomInput = z.infer<typeof addViewByRoomSchema>;
-// -----------------------
-// Update ViewByRoom Schema
-// -----------------------
-export const updateViewByRoomSchema = z.object({
-  type: z.string().optional(),
-  location: z.string().optional(),
+export const ViewByRoomSchema = z
+  .object({
+    type: z.string().min(1, "type is required"),
+    name: z.string().optional(),
+    added_by: z.string(),
+    item: z.array(z.string().min(1)).nonempty("item array cannot be empty"),
+  })
+  .strict();
 
-  brand: z.string().optional(),
-  brandLineColor: z.string().optional(),
-  finish: z.string().optional(),
-  room: z.string().optional(),
-  lastPainted: z.string().optional(),
-});
-export type TUpdateViewByRoomInput = z.infer<typeof updateViewByRoomSchema>;
+export type TViewByRoomDto = z.infer<typeof ViewByRoomSchema>;

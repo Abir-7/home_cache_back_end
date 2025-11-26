@@ -230,6 +230,7 @@ const data=await db.insert(FollowProviders).values({user_id,provider_id}).return
 }
 }
 
+
 const getProviderFollow =async(user_id:string,provider_id:string)=>{
 
   const data= await db.query.FollowProviders.findFirst({where:and(eq(FollowProviders.user_id,user_id),eq(FollowProviders.provider_id,provider_id))})
