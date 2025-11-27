@@ -9,6 +9,7 @@ import {
 } from "../dtos/document.dtos";
 import { DocumentRepository } from "../repositories/document.repository";
 import { Repository } from "../repositories/helper.repository";
+import { AppError } from "../utils/serverTools/AppError";
 
 const createDocumentWithType = async (payload: TCreateDocumentPayload) => {
   return await Repository.transaction(async (tx) => {
@@ -69,9 +70,17 @@ const getAllDocumentWithDetails = async (user_id: string, type: string) => {
 };
 
 const getSingleDocumentWithDetails = async (doc_id: string) => {
-  return await DocumentRepository.getSingleDocumentWithDetails(doc_id);
+  const doc = await DocumentRepository.getSingleDocumentWithDetails(doc_id);
+
+  if (!doc) {
+    throw new AppError("Document not found.", 404);
+  }
+  return doc;
 };
 
+const deleteDocument = async (doc_id: string) => {
+  return await DocumentRepository.deleteDocument(doc_id);
+};
 // -------------------------
 // EXPORT SERVICE
 // -------------------------
@@ -79,4 +88,5 @@ export const DocumentService = {
   createDocumentWithType,
   getAllDocumentWithDetails,
   getSingleDocumentWithDetails,
+  deleteDocument,
 };

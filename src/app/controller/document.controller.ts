@@ -62,8 +62,19 @@ const getSingleDocumentWithDetails = catchAsync(
   }
 );
 
+const deleteSingleDocument = catchAsync(async (req: Request, res: Response) => {
+  const result = await DocumentService.deleteDocument(req.params.doc_id);
+  sendResponse(res, {
+    success: true,
+    message: " Document deleted.",
+    status_code: 200,
+    data: result,
+  });
+});
+
 export const DocumentController = {
   createDocumentWithDetails,
   getAllDocumentWithDetails,
   getSingleDocumentWithDetails,
+  deleteSingleDocument,
 };
