@@ -22,6 +22,15 @@ router.post(
   ViewByRoomController.additemToRoom
 );
 
+router.post(
+  "/add-room-type",
+  auth(["user"]),
+  upload.single("file"),
+  parseDataField("data"),
+  ViewByRoomController.addRoomType
+);
+router.get("/all-type", auth(["user"]), ViewByRoomController.getAllRoomType);
+
 router.get("/all", auth(["user"]), ViewByRoomController.getAllRoom);
 
 router.get("/:room_id", auth(["user"]), ViewByRoomController.getRoomById);

@@ -4,6 +4,7 @@ import { Repository } from "../repositories/helper.repository";
 import { RoomItemRepository } from "../repositories/room_item.repository";
 import { RoomItemDetailsRepository } from "../repositories/room_item_details.repository";
 import { ViewByRoomRepository } from "../repositories/view_by_room.repository";
+import { capitalizeFirstLetter } from "../utils/helper/capitalizeFirstLetter";
 import { deleteFile } from "../utils/helper/s3/deleteSingleFile";
 import { AppError } from "../utils/serverTools/AppError";
 
@@ -12,8 +13,29 @@ const addRoom = async (
 ) => {
   const { item, ...rest } = data;
 
+  const get_type = await ViewByRoomRepository.getRoomTypeById(rest.type_id);
+
+  if (!get_type) {
+    throw new AppError("Type not found.");
+  }
+
+  const get_user_room_number =
+    await ViewByRoomRepository.get_user_same_room_amount(
+      data.added_by,
+      data.type_id
+    );
+
   return Repository.transaction(async (tx) => {
-    const saved_data = await ViewByRoomRepository.addRoom(rest, tx);
+    const saved_data = await ViewByRoomRepository.addRoom(
+      {
+        ...rest,
+
+        room_name: `${capitalizeFirstLetter(get_type.type)}${
+          get_user_room_number > 0 ? ` ${get_user_room_number}` : ""
+        }`,
+      },
+      tx
+    );
 
     const item_data = item.map((i) => ({
       room_id: saved_data.id,
@@ -106,6 +128,22 @@ const deleteRoomItem = async (room_item_id: string) => {
   return deleted_data;
 };
 
+//=== Room type ===
+
+const addRoomType = async (data: {
+  type: string;
+  image: string;
+  image_id: string;
+}) => {
+  const saved_data = await ViewByRoomRepository.addRoomType(data);
+  return saved_data;
+};
+
+const getAllRoomType = async () => {
+  const saved_data = await ViewByRoomRepository.getAllRoomType();
+  return saved_data;
+};
+
 export const ViewByRoomService = {
   addRoom,
   getAllRoom,
@@ -114,4 +152,6 @@ export const ViewByRoomService = {
   addItemToRoom,
   updateRoomItem,
   deleteRoomItem,
+  addRoomType,
+  getAllRoomType,
 };

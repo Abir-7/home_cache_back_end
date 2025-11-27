@@ -1,6 +1,6 @@
 {
-  "id": "3c28b909-5e60-44b8-8ccf-7eecc816f439",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "4ac32f4b-5497-4f48-9e93-d4d445bac586",
+  "prevId": "e62d8563-1fa3-41fd-976e-3c64bd44749c",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -87,12 +87,6 @@
         },
         "added_by": {
           "name": "added_by",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_by": {
-          "name": "created_by",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -1788,11 +1782,11 @@
           "primaryKey": false,
           "notNull": false
         },
-        "value": {
-          "name": "value",
-          "type": "integer",
+        "room_name": {
+          "name": "room_name",
+          "type": "varchar",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "added_by": {
           "name": "added_by",

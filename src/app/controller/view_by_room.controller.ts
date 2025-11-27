@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import catchAsync from "../utils/serverTools/catchAsync";
 import { ViewByRoomService } from "../services/view_by_room.service";
 import sendResponse from "../utils/serverTools/sendResponse";
+import { AppError } from "../utils/serverTools/AppError";
 
 const addRoom = catchAsync(async (req: Request, res: Response) => {
   const file = req.file as Express.MulterS3.File | undefined;
@@ -137,13 +138,48 @@ const updateItemOfRoom = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteRoomItem = catchAsync(async (req: Request, res: Response) => {
-  const result = await ViewByRoomService.deleteRoomItem(
-    req.params.room_item_id
+  const result = await ViewByRoomService.getRoomById(
+    req.user.user_id,
+    req.params.room_id
   );
 
   sendResponse(res, {
     success: true,
-    message: "Room item deleted successfully",
+    message: "Room details fetched successfully",
+    status_code: 200,
+    data: result,
+  });
+});
+
+// ========= Room type===========
+const addRoomType = catchAsync(async (req: Request, res: Response) => {
+  const file = req.file as Express.MulterS3.File;
+
+  if (!file.key) {
+    throw new AppError("Image not provided", 400);
+  }
+
+  const result = await ViewByRoomService.addRoomType({
+    ...req.body,
+    type: (req.body?.type as string)?.toLowerCase(),
+    image: file.location,
+    image_id: file.key,
+  });
+
+  sendResponse(res, {
+    success: true,
+    message: "Room type added successfully",
+    status_code: 200,
+    data: result,
+  });
+});
+
+const getAllRoomType = catchAsync(async (req: Request, res: Response) => {
+  const result = await ViewByRoomService.getAllRoomType();
+
+  sendResponse(res, {
+    success: true,
+    message: "Room type fetched successfully",
     status_code: 200,
     data: result,
   });
@@ -157,4 +193,6 @@ export const ViewByRoomController = {
   additemToRoom,
   updateItemOfRoom,
   deleteRoomItem,
+  addRoomType,
+  getAllRoomType,
 };

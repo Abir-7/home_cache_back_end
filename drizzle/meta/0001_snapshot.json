@@ -1,6 +1,6 @@
 {
-  "id": "3c28b909-5e60-44b8-8ccf-7eecc816f439",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "2759868e-d29e-47b4-8870-7ac945893993",
+  "prevId": "3c28b909-5e60-44b8-8ccf-7eecc816f439",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -1793,6 +1793,12 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": true
+        },
+        "room_name": {
+          "name": "room_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
         },
         "added_by": {
           "name": "added_by",

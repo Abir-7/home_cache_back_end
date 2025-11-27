@@ -1,31 +1,82 @@
-import { TFile, TNewDocument } from "../dtos/document.dtos";
+import {
+  TCreateDocumentPayload,
+  TInsuranceInsert,
+  TManualInsert,
+  TOtherInsert,
+  TQuoteInsert,
+  TReceiptInsert,
+  TWarrantyInsert,
+} from "../dtos/document.dtos";
 import { DocumentRepository } from "../repositories/document.repository";
+import { Repository } from "../repositories/helper.repository";
 
-const saveNewDocument = async (
-  user_id: string,
-  data: TNewDocument & { files: TFile[] }
-) => {
-  return await DocumentRepository.addNewDocument({
-    ...data,
-    added_by: user_id,
-    ...(data.exp_date ? { exp_date: new Date(data.exp_date) } : {}),
+const createDocumentWithType = async (payload: TCreateDocumentPayload) => {
+  return await Repository.transaction(async (tx) => {
+    const [doc] = await DocumentRepository.createDocument(payload.main, tx);
+    if (!doc) throw new Error("Failed to create main document");
+
+    const document_id = doc.id;
+
+    const detailsWithDocId = { ...payload.details, document_id };
+
+    switch (payload.main.type) {
+      case "warranty":
+        console.log("hit");
+        await DocumentRepository.createWarranty(
+          detailsWithDocId as TWarrantyInsert,
+          tx
+        );
+        break;
+      case "insurance":
+        await DocumentRepository.createInsurance(
+          detailsWithDocId as TInsuranceInsert,
+          tx
+        );
+        break;
+      case "receipt":
+        await DocumentRepository.createReceipt(
+          detailsWithDocId as TReceiptInsert,
+          tx
+        );
+        break;
+      case "quote":
+        await DocumentRepository.createQuote(
+          detailsWithDocId as TQuoteInsert,
+          tx
+        );
+        break;
+      case "manual":
+        await DocumentRepository.createManual(
+          detailsWithDocId as TManualInsert,
+          tx
+        );
+        break;
+      case "other":
+        await DocumentRepository.createOther(
+          detailsWithDocId as TOtherInsert,
+          tx
+        );
+        break;
+      default:
+        throw new Error("Invalid document type");
+    }
+    return doc;
   });
 };
 
-const getAllDocument = async (type: string) => {
-  return await DocumentRepository.getAllDocument(type);
+const getAllDocumentWithDetails = async (user_id: string, type: string) => {
+  return await DocumentRepository.getAllDocumentsWithDetails([user_id], type);
 };
 
-const getSingleDocument = async (document_id: string) => {
-  return await DocumentRepository.getSingleDocument(document_id);
-};
-const deleteSingleDocument = async (document_id: string) => {
-  return await DocumentRepository.deleteSingleDocument(document_id);
+const getSingleDocumentWithDetails = async (doc_id: string) => {
+  return await DocumentRepository.getSingleDocumentWithDetails(doc_id);
 };
 
+// -------------------------
+// EXPORT SERVICE
+// -------------------------
 export const DocumentService = {
-  saveNewDocument,
-  getAllDocument,
-  getSingleDocument,
-  deleteSingleDocument,
+  createDocumentWithType,
+  getAllDocumentWithDetails,
+  getSingleDocumentWithDetails,
 };

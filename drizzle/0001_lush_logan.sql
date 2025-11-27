@@ -1,0 +1,1 @@
+ALTER TABLE "view_by_room" ADD COLUMN "room_name" varchar;

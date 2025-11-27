@@ -259,10 +259,19 @@ CREATE TABLE "user_profiles" (
 	CONSTRAINT "user_profiles_mobile_unique" UNIQUE("mobile")
 );
 --> statement-breakpoint
-CREATE TABLE "view_by_room" (
+CREATE TABLE "room_type" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"type" varchar NOT NULL,
+	"image" varchar,
+	"image_id" varchar,
+	CONSTRAINT "room_type_type_unique" UNIQUE("type")
+);
+--> statement-breakpoint
+CREATE TABLE "view_by_room" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"type_id" uuid NOT NULL,
 	"name" varchar,
+	"value" integer NOT NULL,
 	"added_by" uuid NOT NULL,
 	"image" varchar,
 	"image_id" varchar
@@ -299,5 +308,6 @@ ALTER TABLE "task_assignments" ADD CONSTRAINT "task_assignments_task_id_tasks_id
 ALTER TABLE "user_authentications" ADD CONSTRAINT "user_authentications_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user_home_data" ADD CONSTRAINT "user_home_data_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user_profiles" ADD CONSTRAINT "user_profiles_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "view_by_room" ADD CONSTRAINT "view_by_room_type_id_room_type_id_fk" FOREIGN KEY ("type_id") REFERENCES "public"."room_type"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "view_by_room" ADD CONSTRAINT "view_by_room_added_by_users_id_fk" FOREIGN KEY ("added_by") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "view_by_types" ADD CONSTRAINT "view_by_types_added_by_users_id_fk" FOREIGN KEY ("added_by") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;

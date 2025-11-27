@@ -2,8 +2,8 @@ import { Router } from "express";
 import { auth } from "../middleware/auth/auth";
 import { parseDataField } from "../middleware/parseData";
 
-import { DocumentController } from "../controller/document.controller";
 import { upload } from "../middleware/multer/multer_with_s3";
+import { DocumentController } from "../controller/document.controller";
 
 const router = Router();
 
@@ -12,22 +12,18 @@ router.post(
   auth(["user"]),
   upload.array("files", 5),
   parseDataField("data"),
-  DocumentController.saveNewDocument
+  DocumentController.createDocumentWithDetails
 );
 router.get(
-  "/",
+  "/all",
   auth(["user"]),
+  DocumentController.getAllDocumentWithDetails
+);
 
-  DocumentController.getAllDocument
-);
 router.get(
-  "/:document_id",
+  "/:doc_id",
   auth(["user"]),
-  DocumentController.getSingleDocument
+  DocumentController.getSingleDocumentWithDetails
 );
-router.delete(
-  "/:document_id",
-  auth(["user"]),
-  DocumentController.deleteSingleDocument
-);
+
 export const DocumentRoute = router;
