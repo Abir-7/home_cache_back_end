@@ -72,9 +72,42 @@ const deleteSingleDocument = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateFiles = catchAsync(async (req: Request, res: Response) => {
+  const documentId = req.params.doc_id; // <-- FIXED
+
+  const files = (req.files as Express.MulterS3.File[]) || [];
+
+  const addFiles = files.map((f) => ({
+    file_url: f.location,
+    file_id: f.key,
+  }));
+
+  let removeFileIds: string[] = [];
+
+  if (req.body.remove_file_ids) {
+    removeFileIds = Array.isArray(req.body.remove_file_ids)
+      ? req.body.remove_file_ids
+      : [req.body.remove_file_ids];
+  }
+
+  const updated = await DocumentService.updateDocumentFile({
+    documentId,
+    addFiles,
+    removeFileIds,
+  });
+
+  return sendResponse(res, {
+    success: true,
+    message: "Files updated successfully",
+    status_code: 200,
+    data: updated,
+  });
+});
+
 export const DocumentController = {
   createDocumentWithDetails,
   getAllDocumentWithDetails,
   getSingleDocumentWithDetails,
   deleteSingleDocument,
+  updateFiles,
 };

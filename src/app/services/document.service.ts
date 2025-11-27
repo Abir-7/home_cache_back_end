@@ -9,6 +9,7 @@ import {
 } from "../dtos/document.dtos";
 import { DocumentRepository } from "../repositories/document.repository";
 import { Repository } from "../repositories/helper.repository";
+import { FileType } from "../schema/documents.schema";
 import { AppError } from "../utils/serverTools/AppError";
 
 const createDocumentWithType = async (payload: TCreateDocumentPayload) => {
@@ -81,6 +82,16 @@ const getSingleDocumentWithDetails = async (doc_id: string) => {
 const deleteDocument = async (doc_id: string) => {
   return await DocumentRepository.deleteDocument(doc_id);
 };
+
+const updateDocumentFile = async (data: {
+  documentId: string;
+  addFiles?: FileType[];
+  removeFileIds?: string[];
+}) => {
+  const updated = await DocumentRepository.updateDocumentFiles(data);
+  return updated;
+};
+
 // -------------------------
 // EXPORT SERVICE
 // -------------------------
@@ -89,4 +100,5 @@ export const DocumentService = {
   getAllDocumentWithDetails,
   getSingleDocumentWithDetails,
   deleteDocument,
+  updateDocumentFile,
 };

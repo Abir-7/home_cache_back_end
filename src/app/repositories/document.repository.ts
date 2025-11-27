@@ -7,6 +7,7 @@ import { desc, eq } from "drizzle-orm";
 import { db, schema } from "../db";
 import {
   Documents,
+  FileType,
   InsuranceDocuments,
   ManualDocuments,
   OtherDocuments,
@@ -276,6 +277,43 @@ const getSingleDocumentWithDetails = async (documentId: string) => {
   };
 };
 
+const updateDocumentFiles = async ({
+  documentId,
+  addFiles = [],
+  removeFileIds = [],
+}: {
+  documentId: string;
+
+  addFiles?: FileType[];
+  removeFileIds?: string[];
+}) => {
+  const doc = await db.query.Documents.findFirst({
+    where: eq(Documents.id, documentId),
+  });
+
+  if (!doc) throw new Error("Document not found");
+
+  let updatedFiles = doc.files ?? [];
+
+  if (removeFileIds.length > 0) {
+    updatedFiles = updatedFiles.filter(
+      (file) => !removeFileIds.includes(file.file_id)
+    );
+  }
+
+  if (addFiles.length > 0) {
+    updatedFiles = [...updatedFiles, ...addFiles];
+  }
+
+  const [updated] = await db
+    .update(Documents)
+    .set({ files: updatedFiles })
+    .where(eq(Documents.id, documentId))
+    .returning();
+
+  return updated;
+};
+
 // -------------------------
 // EXPORT REPOSITORY
 // -------------------------
@@ -292,4 +330,5 @@ export const DocumentRepository = {
   createOther,
   getAllDocumentsWithDetails,
   getSingleDocumentWithDetails,
+  updateDocumentFiles,
 };

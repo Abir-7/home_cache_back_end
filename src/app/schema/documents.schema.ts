@@ -12,7 +12,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { UserProfiles } from "./user_profiles.schema";
 
-export type File = {
+export type FileType = {
   file_url: string;
   file_id: string;
 };
@@ -35,7 +35,7 @@ export const documentTypeEnum = pgEnum("document_types", [
 export const Documents = pgTable("documents", {
   id: uuid("id").primaryKey().defaultRandom(),
   type: documentTypeEnum("type").notNull(),
-  files: jsonb("files").$type<File[]>().notNull(),
+  files: jsonb("files").$type<FileType[]>().notNull(),
   added_by: uuid("added_by")
     .references(() => UserProfiles.user_id)
     .notNull(),

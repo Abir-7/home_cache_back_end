@@ -26,6 +26,14 @@ router.get(
   DocumentController.getSingleDocumentWithDetails
 );
 
+router.patch(
+  "/files/:doc_id",
+  upload.array("files", 5),
+  parseDataField("data"),
+  auth(["user"]),
+  DocumentController.updateFiles
+);
+
 router.delete(
   "/:doc_id",
   auth(["user"]),
