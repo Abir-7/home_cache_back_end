@@ -34,6 +34,12 @@ router.patch(
   DocumentController.updateFiles
 );
 
+router.patch(
+  "/details/:doc_id",
+  auth(["user"]),
+  DocumentController.updateDocumentDetails
+);
+
 router.delete(
   "/:doc_id",
   auth(["user"]),

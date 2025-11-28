@@ -7,7 +7,7 @@ import { extractMainAndDetailFields } from "../utils/helper/create_document/spli
 const createDocumentWithDetails = catchAsync(
   async (req: Request, res: Response) => {
     const files = req.files as Express.MulterS3.File[] | undefined;
-    console.log(files);
+
     const mappedFiles =
       files?.map((f) => ({
         file_url: f.location,
@@ -104,10 +104,29 @@ const updateFiles = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateDocumentDetails = catchAsync(
+  async (req: Request, res: Response) => {
+    const documentId = req.params.doc_id; // <-- FIXED
+
+    const updated = await DocumentService.updateDocumentDetails(
+      documentId,
+      req.body
+    );
+
+    return sendResponse(res, {
+      success: true,
+      message: "Details updated successfully",
+      status_code: 200,
+      data: updated,
+    });
+  }
+);
+
 export const DocumentController = {
   createDocumentWithDetails,
   getAllDocumentWithDetails,
   getSingleDocumentWithDetails,
   deleteSingleDocument,
   updateFiles,
+  updateDocumentDetails,
 };

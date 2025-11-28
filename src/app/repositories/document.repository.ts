@@ -277,6 +277,14 @@ const getSingleDocumentWithDetails = async (documentId: string) => {
   };
 };
 
+export type UpdateDetailsPayload =
+  | { type: "warranty"; data: Partial<typeof WarrantyDocuments.$inferInsert> }
+  | { type: "insurance"; data: Partial<typeof InsuranceDocuments.$inferInsert> }
+  | { type: "receipt"; data: Partial<typeof ReceiptDocuments.$inferInsert> }
+  | { type: "quote"; data: Partial<typeof QuoteDocuments.$inferInsert> }
+  | { type: "manual"; data: Partial<typeof ManualDocuments.$inferInsert> }
+  | { type: "other"; data: Partial<typeof OtherDocuments.$inferInsert> };
+
 const updateDocumentFiles = async ({
   documentId,
   addFiles = [],
@@ -314,6 +322,45 @@ const updateDocumentFiles = async ({
   return updated;
 };
 
+const updateDocumentDetails = async (
+  documentId: string,
+  payload: UpdateDetailsPayload
+) => {
+  // Validate document exists
+  const doc = await db.query.Documents.findFirst({
+    where: eq(Documents.id, documentId),
+  });
+
+  if (!doc) throw new Error("Document not found.");
+
+  if (doc.type !== payload.type) {
+    throw new Error(
+      `This document is '${doc.type}'. You tried to update '${payload.type}'.`
+    );
+  }
+
+  // Map document type → table
+  const tableMap = {
+    warranty: WarrantyDocuments,
+    insurance: InsuranceDocuments,
+    receipt: ReceiptDocuments,
+    quote: QuoteDocuments,
+    manual: ManualDocuments,
+    other: OtherDocuments,
+  } as const;
+
+  const table = tableMap[payload.type];
+
+  // Update the specific child table
+  const updated = await db
+    .update(table)
+    .set(payload.data)
+    .where(eq(table.document_id, documentId))
+    .returning();
+
+  return updated[0];
+};
+
 // -------------------------
 // EXPORT REPOSITORY
 // -------------------------
@@ -331,4 +378,5 @@ export const DocumentRepository = {
   getAllDocumentsWithDetails,
   getSingleDocumentWithDetails,
   updateDocumentFiles,
+  updateDocumentDetails,
 };

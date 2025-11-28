@@ -7,7 +7,10 @@ import {
   TReceiptInsert,
   TWarrantyInsert,
 } from "../dtos/document.dtos";
-import { DocumentRepository } from "../repositories/document.repository";
+import {
+  DocumentRepository,
+  UpdateDetailsPayload,
+} from "../repositories/document.repository";
 import { Repository } from "../repositories/helper.repository";
 import { FileType } from "../schema/documents.schema";
 import { AppError } from "../utils/serverTools/AppError";
@@ -91,7 +94,13 @@ const updateDocumentFile = async (data: {
   const updated = await DocumentRepository.updateDocumentFiles(data);
   return updated;
 };
-
+const updateDocumentDetails = async (
+  doc_id: string,
+  data: UpdateDetailsPayload
+) => {
+  const updated = await DocumentRepository.updateDocumentDetails(doc_id, data);
+  return updated;
+};
 // -------------------------
 // EXPORT SERVICE
 // -------------------------
@@ -101,4 +110,5 @@ export const DocumentService = {
   getSingleDocumentWithDetails,
   deleteDocument,
   updateDocumentFile,
+  updateDocumentDetails,
 };
