@@ -18,6 +18,18 @@ const getResponse = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const get_message = catchAsync(async (req: Request, res: Response) => {
+  const result = await AiService.get_message(req.user.user_id);
+
+  sendResponse(res, {
+    success: true,
+    message: "Message fetched successfully.",
+    status_code: 200,
+    data: result,
+  });
+});
+
 export const AiController = {
   getResponse,
+  get_message,
 };

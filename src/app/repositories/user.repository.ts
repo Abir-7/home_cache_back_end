@@ -1,9 +1,11 @@
-import { eq, ilike } from "drizzle-orm";
+import { eq, ilike, inArray } from "drizzle-orm";
 import { db, schema } from "../db";
 import { Users } from "../schema/user.schema";
 
 import { UserHomeData } from "../schema/user_home_data";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
+import { tr } from "zod/v4/locales";
+import { UserProfiles } from "../schema/user_profiles.schema";
 
 const findByEmail = async (email: string) => {
   const [user] = await db.select().from(Users).where(eq(Users.email, email));
@@ -12,6 +14,17 @@ const findByEmail = async (email: string) => {
 
 const findById = async (id: string) => {
   const [user] = await db.select().from(Users).where(eq(Users.id, id));
+  return user || null;
+};
+const findByIdWithProfile = async (id: string) => {
+  const user = await db.query.Users.findFirst({
+    where: eq(Users.id, id),
+    columns: { email: true, id: true },
+    with: {
+      profile: { columns: { image: true, first_name: true, last_name: true } },
+    },
+  });
+
   return user || null;
 };
 
@@ -33,7 +46,6 @@ const updateUser = async (
 };
 
 const createUsersHomeData = async (
-  user_id: string,
   data: typeof UserHomeData.$inferInsert,
   tx?: NodePgDatabase<typeof schema>
 ) => {
@@ -92,6 +104,58 @@ export const searchUser = async (email: string) => {
   });
 };
 
+const getSomeUsersByIds = async (user_ids: string[]) => {
+  const users = await db.query.Users.findMany({
+    where: inArray(Users.id, user_ids),
+    columns: {
+      id: true,
+      email: true,
+    },
+    with: {
+      profile: { columns: { image: true, last_name: true, first_name: true } },
+    },
+  });
+  return users;
+};
+
+const getUserInfo = async (user_id: string) => {
+  const users = await db.query.Users.findFirst({
+    where: eq(Users.id, user_id),
+    columns: {
+      id: true,
+      email: true,
+      is_home_data_given: true,
+      role: true,
+    },
+    with: {
+      profile: {
+        columns: {
+          image: true,
+          last_name: true,
+          first_name: true,
+          address: true,
+          gender: true,
+          mobile: true,
+        },
+      },
+    },
+  });
+  return users;
+};
+
+const updateUserProfile = async (
+  id: string,
+  data: Partial<typeof UserProfiles.$inferInsert>,
+  trx?: NodePgDatabase<typeof schema>
+) => {
+  const [user_profile] = await (trx || db)
+    .update(UserProfiles)
+    .set({ ...data, updated_at: new Date() })
+    .where(eq(UserProfiles.user_id, id))
+    .returning();
+  return user_profile;
+};
+
 export const UserRepository = {
   findByEmail,
   findById,
@@ -101,5 +165,9 @@ export const UserRepository = {
   updateUserHomeData,
   getUsersHomeData,
   searchUser,
+  findByIdWithProfile,
   deleteUser,
+  getSomeUsersByIds,
+  getUserInfo,
+  updateUserProfile,
 };

@@ -4,12 +4,11 @@ import { Tasks } from "./task.schema";
 import { relations } from "drizzle-orm";
 import { timestamps } from "../db/helper/columns.helpers";
 
+export const taskStatus = ["pending", "ignored", "completed"] as const;
+
 // Enum for status
-export const taskStatusEnum = pgEnum("task_status", [
-  "pending",
-  "ignored",
-  "completed",
-]);
+export const taskStatusEnum = pgEnum("task_status", taskStatus);
+
 export const userTypeEnum = pgEnum("user_type", ["user", "provider"]);
 
 export const TaskAssignments = pgTable("task_assignments", {

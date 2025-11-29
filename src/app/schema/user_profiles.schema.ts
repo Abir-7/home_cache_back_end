@@ -13,15 +13,15 @@ export const UserProfiles = pgTable("user_profiles", {
   user_id: uuid("user_id")
     .notNull()
     .references(() => Users.id, { onDelete: "cascade" })
-    .unique(), // FK to users table
+    .unique(),
   first_name: varchar("first_name", { length: 100 }),
   last_name: varchar("last_name", { length: 100 }),
   user_name: varchar("user_name", { length: 50 }).unique(),
   mobile: varchar("mobile", { length: 20 }).unique(),
   address: text("address"),
   gender: genderEnum("gender"),
-  image: text("image"), // URL or base64
-  image_id: text("image_id"), // URL or base64
+  image: text("image"),
+  image_id: text("image_id"),
   ...timestamps,
 });
 

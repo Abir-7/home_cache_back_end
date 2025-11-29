@@ -8,7 +8,6 @@ const updateHomeDataOfUser = catchAsync(async (req: Request, res: Response) => {
     req.user.user_id,
     req.body
   );
-
   sendResponse(res, {
     success: true,
     message: "Users home data updated successfully",
@@ -17,4 +16,30 @@ const updateHomeDataOfUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const UserController = { updateHomeDataOfUser };
+const getMyData = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserServce.getMyData(req.user.user_id);
+  sendResponse(res, {
+    success: true,
+    message: "Users info fetched successfully",
+    status_code: 200,
+    data: result,
+  });
+});
+
+const updateUser = catchAsync(async (req: Request, res: Response) => {
+  const file = req.file as Express.MulterS3.File;
+  const data = req.body;
+  if (file.key) {
+    data.image = file.location;
+    data.image_id = file.key;
+  }
+  const result = await UserServce.updateUser(req.user.user_id, data);
+  sendResponse(res, {
+    success: true,
+    message: "Users updated successfully",
+    status_code: 200,
+    data: result,
+  });
+});
+
+export const UserController = { updateHomeDataOfUser, getMyData, updateUser };

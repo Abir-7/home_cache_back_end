@@ -5,6 +5,7 @@ import { and, eq } from "drizzle-orm";
 import { RoomItem } from "../schema/room_item.schema";
 import { sql } from "drizzle-orm";
 import { AppError } from "../utils/serverTools/AppError";
+import { appConfig } from "../config/appConfig";
 
 const addRoom = async (
   data: typeof ViewByRoom.$inferInsert,
@@ -87,7 +88,11 @@ const addRoomType = async (
   // ensure data is always an array
   const values = Array.isArray(data) ? data : [data];
 
-  return await client.insert(RoomType).values(values).returning();
+  return await client
+    .insert(RoomType)
+    .values(values)
+    .onConflictDoNothing()
+    .returning();
 };
 
 const getAllRoomType = async () => {
@@ -131,6 +136,91 @@ const get_user_same_room_amount = async (
     );
   return result[0]?.total ?? 0;
 };
+
+export const defaultRoom = async () => {
+  // https://k10swf0g-6000.inc1.devtunnels.ms/images/default/room/bath.png
+
+  const data = [
+    {
+      type: "Bed",
+      image: `${appConfig.server.base_url}/images/default/room/bed.png",
+      image_id: "/images/default/room/bed.png`,
+    },
+    {
+      type: "Bath",
+      image: `${appConfig.server.base_url}/images/default/room/bath.png",
+      image_id: "/images/default/room/bath.png`,
+    },
+    {
+      type: "Basement",
+      image: `${appConfig.server.base_url}/images/default/room/basement.png",
+      image_id: "/images/default/room/basement.png`,
+    },
+    {
+      type: "Dining",
+      image: `${appConfig.server.base_url}/images/default/room/dining.png",
+      image_id: "/images/default/room/dining.png`,
+    },
+    {
+      type: "Garage",
+      image: `${appConfig.server.base_url}/images/default/room/garage.png",
+      image_id: "/images/default/room/garage.png`,
+    },
+    {
+      type: "Gym",
+      image: `${appConfig.server.base_url}/images/default/room/gym.png",
+      image_id: "/images/default/room/gym.png`,
+    },
+    {
+      type: "Kitchen",
+      image: `${appConfig.server.base_url}/images/default/room/kitchen.png",
+      image_id: "/images/default/room/kitchen.png`,
+    },
+    {
+      type: "Laundry",
+      image: `${appConfig.server.base_url}/images/default/room/laundry.png",
+      image_id: "/images/default/room/laundry.png`,
+    },
+    {
+      type: "Living Room",
+      image: `${appConfig.server.base_url}/images/default/room/living.png",
+      image_id: "/images/default/room/living.png`,
+    },
+    {
+      type: "Media",
+      image: `${appConfig.server.base_url}/images/default/room/media.png",
+      image_id: "/images/default/room/media.png`,
+    },
+    {
+      type: "Mudroom",
+      image: `${appConfig.server.base_url}/images/default/room/mud.png",
+      image_id: "/images/default/room/mud.png`,
+    },
+    {
+      type: "Office",
+      image: `${appConfig.server.base_url}/images/default/room/office.png",
+      image_id: "/images/default/room/office.png`,
+    },
+    {
+      type: "Other",
+      image: `${appConfig.server.base_url}/images/default/room/other.png",
+      image_id: "/images/default/room/other.png`,
+    },
+    {
+      type: "Play Room",
+      image: `${appConfig.server.base_url}/images/default/room/play.png",
+      image_id: "/images/default/room/play.png`,
+    },
+    {
+      type: "Sun Room",
+      image: `${appConfig.server.base_url}/images/default/room/sun.png",
+      image_id: "images/default/room/sun.png`,
+    },
+  ];
+
+  await addRoomType(data.map((i) => ({ ...i, type: i.type.toLowerCase() })));
+};
+
 export const ViewByRoomRepository = {
   addRoom,
   getAllRoom,

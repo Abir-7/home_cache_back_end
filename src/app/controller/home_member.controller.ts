@@ -79,6 +79,16 @@ const leave = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getMyHomeMember = catchAsync(async (req: Request, res: Response) => {
+  const result = await HomeMemberService.getMyHomeMembers(req.user.user_id);
+  sendResponse(res, {
+    success: true,
+    message: "Member list fetched successfully",
+    status_code: 200,
+    data: result,
+  });
+});
+
 export const HomememberController = {
   searchMember,
   sendInvite,
@@ -86,4 +96,5 @@ export const HomememberController = {
   rejectRequest,
   leave,
   getInviteList,
+  getMyHomeMember,
 };

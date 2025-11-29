@@ -211,6 +211,30 @@ const update_task_status = async (data: TaskStatusUpdate) => {
   }
 };
 
+const usersHomeTaskDetails = async (user_id: string) => {
+  const user_home = await HomeRoomRepository.getMemberById(user_id);
+
+  let user_all_id: string[] = [];
+
+  if (user_home) {
+    user_all_id = await HomeRoomRepository.getAllMemberOfHome(
+      user_home.home_room_id
+    );
+  }
+
+  if (user_all_id.length === 0) {
+    user_all_id = [user_id];
+  }
+
+  const [tasks, my_data, health] = await Promise.all([
+    TaskRepository.getTasksBySeason([user_id]),
+    TaskRepository.getAssignedTaskCountsBySeason([user_id]),
+    TaskRepository.getHomeHealthPercentage(user_all_id),
+  ]);
+
+  return { tasks, health, my_data };
+};
+
 export const TaskService = {
   addTask,
   assignMember,
@@ -218,4 +242,5 @@ export const TaskService = {
   taskDetails,
   getTaskNotification,
   update_task_status,
+  usersHomeTaskDetails,
 };

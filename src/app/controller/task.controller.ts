@@ -74,6 +74,17 @@ const update_task_status = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const usersHomeTaskDetails = catchAsync(async (req: Request, res: Response) => {
+  const result = await TaskService.usersHomeTaskDetails(req.user.user_id);
+
+  sendResponse(res, {
+    success: true,
+    message: "Home task data fetched successfully",
+    status_code: 200,
+    data: result,
+  });
+});
+
 export const TaskController = {
   addNewTask,
   assignedMember,
@@ -81,4 +92,5 @@ export const TaskController = {
   taskDetails,
   getTaskNotification,
   update_task_status,
+  usersHomeTaskDetails,
 };

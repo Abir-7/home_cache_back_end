@@ -4,6 +4,8 @@ import { db } from "../db";
 import { ChatMessages } from "../schema/chat_message.schema";
 import { saveMessageQueue } from "../lib/bullmq/queues/saveMessage.queue";
 import { string } from "zod";
+import { desc } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 const MAX_CONTEXT = 5;
 
@@ -13,8 +15,11 @@ async function addMessage(userId: string, role: string, content: string) {
 
   await redis.ltrim(key, -MAX_CONTEXT, -1);
 
-  await saveMessageQueue.add("save_message",{user:userId,message:content,role:role})
-
+  await saveMessageQueue.add("save_message", {
+    user: userId,
+    message: content,
+    role: role,
+  });
 }
 async function getContext(userId: string) {
   const key = `chat:${userId}`;
@@ -22,12 +27,15 @@ async function getContext(userId: string) {
   return messages.map((msg) => JSON.parse(msg));
 }
 
-export const saveMessageToDataBase=async(userId: string, role: string, content: string)=>{
-  await db.insert(ChatMessages).values({user_id:userId,role,content})
-}
+export const saveMessageToDataBase = async (
+  userId: string,
+  role: string,
+  content: string
+) => {
+  await db.insert(ChatMessages).values({ user_id: userId, role, content });
+};
 
 //-----------------------------Main----------------------------------//
-
 
 async function chatWithAI(userId: string, userMessage: string, res: any) {
   await addMessage(userId, "user", userMessage);
@@ -45,11 +53,20 @@ async function chatWithAI(userId: string, userMessage: string, res: any) {
 
   await addMessage(userId, "assistant", aiResponse);
 
-  return aiResponse;
+  return { user_id: userId, role: "assistant", content: aiResponse };
 }
 
-
+const getChatMessage = async (user_id: string) => {
+  const messages = await db
+    .select()
+    .from(ChatMessages)
+    .where(eq(ChatMessages.user_id, user_id))
+    .orderBy(desc(ChatMessages.created_at)) // newest first
+    .limit(15);
+  return messages.reverse();
+};
 
 export const AiRepository = {
   chatWithAI,
+  getChatMessage,
 };

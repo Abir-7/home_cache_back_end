@@ -13,6 +13,12 @@ router.patch(
   TaskController.assignedMember
 );
 router.get(
+  "/home-task-data",
+  auth(["user"]),
+  TaskController.usersHomeTaskDetails
+);
+
+router.get(
   "/task_notification",
   auth(["user"]),
   TaskController.getTaskNotification

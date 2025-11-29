@@ -79,7 +79,6 @@ const registerUser = async (
       );
 
       const updated_homedata = await UserRepository.createUsersHomeData(
-        profile.user_id,
         { user_id: profile.user_id },
         trx
       );

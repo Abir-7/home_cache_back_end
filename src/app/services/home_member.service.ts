@@ -104,6 +104,24 @@ const leaveAsHomeMember = async (user_id: string) => {
   });
 };
 
+const getMyHomeMembers = async (user_id: string) => {
+  const user_home_data = await HomeRoomRepository.getMemberById(user_id);
+
+  if (!user_home_data) {
+    const user_data = await UserRepository.getSomeUsersByIds([user_id]);
+    return user_data;
+  } else {
+    if (user_home_data.home_room_id) {
+      const home_member_ids = await HomeRoomRepository.getAllMemberOfHome(
+        user_home_data.home_room_id
+      );
+
+      const user_data = await UserRepository.getSomeUsersByIds(home_member_ids);
+      return user_data;
+    }
+  }
+};
+
 export const HomeMemberService = {
   serachMember,
   inviteUser,
@@ -111,4 +129,5 @@ export const HomeMemberService = {
   rejectInviteStatus,
   leaveAsHomeMember,
   getInviteList,
+  getMyHomeMembers,
 };

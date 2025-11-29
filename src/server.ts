@@ -7,6 +7,7 @@ import redis from "./app/lib/radis";
 import { initSocket } from "./app/lib/socket";
 import { seedAdmin } from "./app/db/seedAdmin";
 import "../src/app/lib/bullmq/worker/all_worker";
+import { defaultRoom } from "./app/repositories/view_by_room.repository";
 
 const server = http.createServer(app);
 
@@ -14,7 +15,7 @@ server.listen(appConfig.server.port, async () => {
   try {
     await db.execute("select 1").then(() => logger.info("Database connected."));
     await seedAdmin();
-
+    defaultRoom();
     initSocket(server);
     logger.info(
       `Server running in ${appConfig.server.node_env} mode on port ${appConfig.server.port}`

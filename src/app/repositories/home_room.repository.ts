@@ -2,11 +2,12 @@ import { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { db, schema } from "../db";
 import { RoomMembers } from "../schema/home_room_member.schema";
-import { and, eq, ne } from "drizzle-orm";
+import { and, eq, inArray, ne } from "drizzle-orm";
 import {
   RoomInvites,
   RoomInviteStatus,
 } from "../schema/home_room_invite.schema";
+import { Users } from "../schema/user.schema";
 
 const makeInvite = async (
   data: typeof RoomInvites.$inferInsert,
@@ -58,14 +59,13 @@ const getMemberById = async (user_id: string) => {
   return member;
 };
 
-
-const getAllMemberOfHome=async(home_room_id:string)=>{
-    const member = await db.query.RoomMembers.findMany({
-    where: eq(RoomMembers.home_room_id, home_room_id),columns:{id:true,home_room_id:true,user_id:true}
+const getAllMemberOfHome = async (home_room_id: string) => {
+  const member = await db.query.RoomMembers.findMany({
+    where: eq(RoomMembers.home_room_id, home_room_id),
+    columns: { id: true, home_room_id: true, user_id: true },
   });
-  return member.map(m=>m.user_id)
-}
-
+  return member.map((m) => m.user_id);
+};
 
 const removeMember = async (
   user_id: string,
@@ -109,21 +109,26 @@ const rejectOtherInvites = async (
   return updated;
 };
 
-
 const getInviteList = async (user_id: string) => {
   const data = await db.query.RoomInvites.findMany({
-    where: and(eq(RoomInvites.receiver, user_id),
-  eq(RoomInvites.status,"pending")),
+    where: and(
+      eq(RoomInvites.receiver, user_id),
+      eq(RoomInvites.status, "pending")
+    ),
     with: {
-      sender: {columns:{user_id:true,first_name:true,last_name:true,image:true}}
+      sender: {
+        columns: {
+          user_id: true,
+          first_name: true,
+          last_name: true,
+          image: true,
+        },
+      },
     },
   });
 
-  return data.map(d=>({invite_id:d.id,sender:d.sender}));
+  return data.map((d) => ({ invite_id: d.id, sender: d.sender }));
 };
-
-
-
 
 export const HomeRoomRepository = {
   removeMember,
@@ -132,6 +137,7 @@ export const HomeRoomRepository = {
   changeInviteStatus,
   getMemberById,
   removeInvite,
-  rejectOtherInvites, 
-  getInviteList,getAllMemberOfHome
+  rejectOtherInvites,
+  getInviteList,
+  getAllMemberOfHome,
 };

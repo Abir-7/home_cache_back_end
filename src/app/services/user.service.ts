@@ -1,3 +1,4 @@
+import { TUserProfile } from "../dtos/user.dtos";
 import { UserRepository } from "../repositories/user.repository";
 import { UserHomeDataPayload } from "../types/user_service.types";
 import { AppError } from "../utils/serverTools/AppError";
@@ -18,4 +19,13 @@ const updateHomeDataOfUser = async (
   return updated_home_data;
 };
 
-export const UserServce = { updateHomeDataOfUser};
+const getMyData = async (user_id: string) => {
+  return await UserRepository.getUserInfo(user_id);
+};
+
+const updateUser = async (user_id: string, data: Partial<TUserProfile>) => {
+  const updated_data = await UserRepository.updateUserProfile(user_id, data);
+  return updated_data;
+};
+
+export const UserServce = { updateHomeDataOfUser, getMyData, updateUser };

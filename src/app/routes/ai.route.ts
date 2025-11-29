@@ -4,4 +4,5 @@ import { AiController } from "../controller/ai.controller";
 
 const router = Router();
 router.post("/get-response", auth(["user"]), AiController.getResponse);
+router.get("/get-message", auth(["user"]), AiController.get_message);
 export const AiRoute = router;
